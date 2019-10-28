@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="js/script.js"></script>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+
+    <title>Now Playing - MovieLibrary</title>
+</head>
+
+<body class="bg-light page-container" onload="load_home('now_playing', 1)">
+    <div class=".container-fluid">
+        <nav class="navbar sticky-top navbar-dark bg-dark">
+            <button class="btn btn-outline-light" onclick="location.href = 'home.html'">
+                <h1>MovieLibrary</h1>
+            </button>
+
+            <form class="form-inline" action="search.html">
+                <input type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-light ml-1 mr-1">
+                    <i class="material-icons">search</i>
+                </button>
+                <select name="type">
+                    <option value="movie">Movies</option>
+                    <option value="star">Stars</option>
+                </select>
+            </form>
+
+            <button class="btn btn-outline-light">
+                <i class="material-icons md-36">wb_sunny</i>
+            </button>
+        </nav>
+    </div>
+
+    <div id="mid" class="container-fluid p-5">
+
+        <div id="cat" class="text-center">
+            <button class="btn btn-outline-dark" onclick="load_home('popular', 1)">
+                <h2>Popular</h2>
+            </button>
+            <button class="btn btn-outline-dark" onclick="load_home('now_playing', 1)">
+                <h2>Now Playing</h2>
+            </button>
+            <button class="btn btn-outline-dark" onclick="load_home('top_rated', 1)">
+                <h2>Top Rated</h2>
+            </button>
+        </div>
+
+        <div id="loading" class="text-center text-dark mt-5 mb-5">
+            <div class="lds-ellipsis">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+
+        <div id="list" class="row mt-5 mb-5"></div>
+    </div>
+    <footer class="footer text-center text-light bg-dark">
+        <h3>MovieDB</h3>
+    </footer>
+</body>
+
+</html>
