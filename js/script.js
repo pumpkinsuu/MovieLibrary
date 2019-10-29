@@ -271,8 +271,7 @@ async function movie_info(movie_id) {
     }
     director = director.substr(0, director.length - 2) + '.';
 
-    const response3 = await fetch(`https://api.themoviedb.org/3/movie/${movie_id}/reviews?api_key=${key}&language=en-US&page=1
-    `);
+    const response3 = await fetch(`https://api.themoviedb.org/3/movie/${movie_id}/reviews?api_key=${key}&language=en-US&page=1`);
     console.log(response3);
     const data = await response3.json();
     console.log(data);
