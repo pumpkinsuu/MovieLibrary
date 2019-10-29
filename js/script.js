@@ -15,7 +15,7 @@ function load_home(type, page) {
         <button class="btn btn-outline-dark" onclick="load_home('popular', 1)">
             <h2>Popular</h2>
         </button>
-        <button class="btn btn-outline-dark" onclick="load_home('now_playing', 1)">
+        <button class="btn btn-outline-dark ml-2 mr-2" onclick="load_home('now_playing', 1)">
             <h2>Now Playing</h2>
         </button>
         <button class="btn btn-outline-dark" onclick="load_home('top_rated', 1)">
@@ -53,6 +53,14 @@ async function get_list(type, page) {
 
     $('#list').empty();
     for (const item of list) {
+
+        var rated = '';
+        for (i = 0; i < parseInt(item.vote_average / 2); ++i)
+            rated += '&#9733';
+        for (i = parseInt(item.vote_average / 2); i < 5; ++i)
+            rated += '&#9734';
+        rated += '(' + item.vote_count + ')';
+
         $('#list').append(`
             <div class="col-3 mb-3">
                 <div class="card bg-dark text-light img-overlay">
@@ -61,8 +69,8 @@ async function get_list(type, page) {
                     <div class="card-img-overlay d-flex flex-column justify-content-end hide-text text-center">
                         <a class="a-color" href="#" onclick="movie_info(${item.id})">
                             <h5 class="card-title">${item.title}</h5>
-                            <p class="card-text"><small class="text-muted">${item.release_date}</small></p>
-                            <p class="card-text">Rating: ${item.vote_average}(${item.vote_count})</p>
+                            <p class="card-text"><small>${item.release_date}</small></p>
+                            <p class="card-text">${rated}</p>
                         </a>
                     </div>
                 </div>
@@ -72,7 +80,7 @@ async function get_list(type, page) {
 
     if (data.total_pages > 1) {
         $('#list').append(`
-            <div class="col">
+            <div class="col-12">
                 <nav aria-label="Page navigation">
                     <ul class="pagination justify-content-center">
                         <li id="prev" class="page-item">
@@ -156,6 +164,14 @@ async function search_movie(name, page) {
 
     $('#list').empty();
     for (const item of list) {
+
+        var rated = '';
+        for (i = 0; i < parseInt(item.vote_average / 2); ++i)
+            rated += '&#9733';
+        for (i = parseInt(item.vote_average / 2); i < 5; ++i)
+            rated += '&#9734';
+        rated += '(' + item.vote_count + ')';
+
         $('#list').append(`
             <div class="col-3 mb-3">
                 <div class="card bg-dark text-light img-overlay">
@@ -164,8 +180,8 @@ async function search_movie(name, page) {
                     <div class="card-img-overlay d-flex flex-column justify-content-end hide-text text-center">
                         <a class="a-color" href="#" onclick="movie_info(${item.id})">
                             <h5 class="card-title">${item.title}</h5>
-                            <p class="card-text"><small class="text-muted">${item.release_date}</small></p>
-                            <p class="card-text">Rating: ${item.vote_average}(${item.vote_count})</p>
+                            <p class="card-text"><small>${item.release_date}</small></p>
+                            <p class="card-text">${rated}</p>
                         </a>
                     </div>
                 </div>
@@ -231,7 +247,7 @@ async function movie_info(movie_id) {
     const item = await response.json();
     console.log(item);
 
-    var genres = 'Genres: ';
+    var genres = '';
     for (i = 0; i < item.genres.length; ++i) {
         genres += item.genres[i].name + ', ';
     }
@@ -242,7 +258,7 @@ async function movie_info(movie_id) {
     const credits = await response2.json();
     console.log(credits);
 
-    var director = 'Director: ';
+    var director = '';
     for (i = 0; i < credits.crew.length; ++i) {
         if (credits.crew[i].job == 'Director') {
             director += credits.crew[i].name;
@@ -258,6 +274,14 @@ async function movie_info(movie_id) {
     console.log(data);
     const review = data.results;
 
+    var rated = '';
+    for (i = 0; i < parseInt(item.vote_average / 2); ++i)
+        rated += '&#9733';
+    for (i = parseInt(item.vote_average / 2); i < 5; ++i)
+        rated += '&#9734';
+    rated += '(' + item.vote_count + ')';
+
+
     $('#list').empty();
     $('#cast').empty();
     $('#list').append(`
@@ -268,21 +292,20 @@ async function movie_info(movie_id) {
                 </div>
                 <div class="col-8">
                     <div class="card-body">
-                        <h5 class="card-title">${item.title}</h5>
-                        <p class="card-text"><small class="text-muted">${item.release_date}</small></p>
-                        <p class="card-text">Rating: ${item.vote_average}(${item.vote_count})</p>
-                        <p class="card-text">${genres}</p>
-                        <p class="card-text">Over view:</p>
-                        <p class="card-text">${item.overview}</p>
-                        <p class="card-text">${director}</p>
-                        <p class="card-text">Cast:</p>
+                        <h3 class="card-title">${item.title}</h3>
+                        <p class="card-text"><small>${item.release_date}</small></p>
+                        <p class="card-text">${rated}</p>
+                        <p class="card-text"><h5>Genres: </h5>${genres}</p>
+                        <p class="card-text"><h5>Overview: </h5>${item.overview}</p>
+                        <p class="card-text"><h5>Director: </h5>${director}</p>
+                        <h5 class="card-text">Cast:</h5>
                         <div id="cast" class="row">
                     
                         </div>
                     </div>
                 </div>
-                <div id="rw">
-                <p class="offset-1">Review:</p>
+                <div id="rw" class="col-12 bg-dark">
+                    <h4 class="pl-5 pr-5 pt-2 text-light">Review:</h4>
                 </div>
             </div>
         </div>
@@ -298,7 +321,7 @@ async function movie_info(movie_id) {
                     <div class="card-img-overlay d-flex flex-column justify-content-end hide-text text-center">
                         <a class="a-color" href="#" onclick="cast_info(${credits.cast[i].id})">
                             <h5 class="card-title">${credits.cast[i].name}</h5>
-                            <p class="card-text"><small class="text-muted">${credits.cast[i].character}</small></p>
+                            <p class="card-text"><small>${credits.cast[i].character}</small></p>
                         </a>
                     </div>
                 </div>
@@ -308,8 +331,10 @@ async function movie_info(movie_id) {
 
     for (const x of review) {
         $('#rw').append(`
-            <p class="offset-2">${x.author}</p>
-            <p class="offset-2">${x.content}</p>
+            <div class="p-3 ml-5 mr-5 mb-3 bg-light">
+                <h6>${x.author}</h6>
+                <p>${x.content}</p>
+            </div>
         `);
     }
 
@@ -350,6 +375,13 @@ async function search_cast(name) {
     $('#list').empty();
     for (i = 0; i < credits.cast.length; ++i) {
         let cid = 'cast' + i;
+        var rated = '';
+        for (j = 0; j < parseInt(credits.cast[i].vote_average / 2); ++j)
+            rated += '&#9733';
+        for (j = parseInt(credits.cast[i].vote_average / 2); j < 5; ++j)
+            rated += '&#9734';
+        rated += '(' + credits.cast[i].vote_count + ')';
+
         $('#list').append(`
             <div id=${cid} class="col-2 mb-1">
                 <div class="card bg-dark text-light img-overlay">
@@ -357,9 +389,9 @@ async function search_cast(name) {
 
                     <div class="card-img-overlay d-flex flex-column justify-content-end hide-text text-center">
                         <a class="a-color" href="#" onclick="movie_info(${credits.cast[i].id})">
-                            <h5 class="card-title">${credits.cast[i].title}</h5>
-                            <p class="card-text"><small class="text-muted">${credits.cast[i].release_date}</small></p>
-                            <p class="card-text">Rating: ${credits.cast[i].vote_average}(${credits.cast[i].vote_count})</p>
+                            <h3 class="card-title">${credits.cast[i].title}</h3>
+                            <p class="card-text"><small>${credits.cast[i].release_date}</small></p>
+                            <p class="card-text">${rated}</p>
                         </a>
                     </div>
                 </div>
@@ -397,10 +429,9 @@ async function cast_info(person_id) {
                 <div class="col-8">
                     <div class="card-body">
                         <h5 class="card-title">${item.name}</h5>
-                        <p class="card-text"><small class="text-muted">${item.birthday}</small></p>
-                        <p class="card-text">Biography:</p>
-                        <p class="card-text">${item.biography}</p>
-                        <p class="card-text">Cast in:</p>
+                        <p class="card-text"><small>${item.birthday}</small></p>
+                        <p class="card-text"><h5>Biography: </h5>${item.biography}</p>
+                        <p class="card-text"><h5>Cast in: </h5></p>
                         <div id="cast" class="row">
                     
                         </div>
@@ -420,7 +451,7 @@ async function cast_info(person_id) {
                     <div class="card-img-overlay d-flex flex-column justify-content-end hide-text text-center">
                         <a class="a-color" href="#" onclick="movie_info(${credits.cast[i].id})">
                             <h5 class="card-title">${credits.cast[i].title}</h5>
-                            <p class="card-text"><small class="text-muted">${credits.cast[i].release_date}</small></p>
+                            <p class="card-text"><small>${credits.cast[i].release_date}</small></p>
                         </a>
                     </div>
                 </div>
