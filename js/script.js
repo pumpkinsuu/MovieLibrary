@@ -42,7 +42,7 @@ async function get_list(type, page) {
     loading('#list', 1);
 
     const key = 'c35160a326e0344de330c917e176e250';
-    const response = await fetch(`http://api.themoviedb.org/3/movie/${type}?api_key=${key}&page=${page}`);
+    const response = await fetch(`https://api.themoviedb.org/3/movie/${type}?api_key=${key}&page=${page}`);
     console.log(response);
     const data = await response.json();
     console.log(data);
