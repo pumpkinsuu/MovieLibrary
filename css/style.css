@@ -88,6 +88,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 100%;
 }
 
 input[type=search] {
@@ -133,27 +134,44 @@ select {
 
 .a-color:link {
     color: lavender;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.9);
 }
 
 /* visited link */
 .a-color:visited {
     color: lavender;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.9);
 }
 
 /* mouse over link */
 .a-color:hover {
     color: orange;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.9);
     text-decoration: none;
 }
 
 /* selected link */
 .a-color:active {
     color: orange;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.9);
     text-decoration: none;
+}
+
+.card-carousel .carousel-indicators {
+    left: 0;
+    top: auto;
+    bottom: -50px;
+}
+
+.card-carousel .carousel-indicators li {
+    background: #a3a3a3;
+    border-radius: 50%;
+    width: 20px;
+    height: 1px;
+}
+
+.card-carousel .carousel-indicators .active {
+    background: #707070;
 }
 
 .lds-ellipsis {

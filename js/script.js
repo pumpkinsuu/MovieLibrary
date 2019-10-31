@@ -68,9 +68,9 @@ async function get_list(type, page) {
 
                     <div class="card-img-overlay d-flex flex-column justify-content-end hide-text text-center">
                         <a class="a-color" href="#" onclick="movie_info(${item.id})">
-                            <h5 class="card-title">${item.title}</h5>
-                            <p class="card-text"><small>${item.release_date}</small></p>
-                            <p class="card-text">${rated}</p>
+                            <h4 class="card-title mb-0">${item.title}</h4>
+                            <p class="card-text text-white-50 mt-0 mb-2"><small>${item.release_date}</small></p>
+                            <p class="card-text text-warning">${rated}</p>
                         </a>
                     </div>
                 </div>
@@ -181,9 +181,9 @@ async function search_movie(name, page) {
 
                     <div class="card-img-overlay d-flex flex-column justify-content-end hide-text text-center">
                         <a class="a-color" href="#" onclick="movie_info(${item.id})">
-                            <h5 class="card-title">${item.title}</h5>
-                            <p class="card-text"><small>${item.release_date}</small></p>
-                            <p class="card-text">${rated}</p>
+                            <h4 class="card-title mb-0">${item.title}</h4>
+                            <p class="card-text text-white-50 mt-0 mb-2"><small>${item.release_date}</small></p>
+                            <p class="card-text text-warning">${rated}</p>
                         </a>
                     </div>
                 </div>
@@ -262,15 +262,6 @@ async function movie_info(movie_id) {
     const credits = await response2.json();
     console.log(credits);
 
-    var director = '';
-    for (i = 0; i < credits.crew.length; ++i) {
-        if (credits.crew[i].job == 'Director') {
-            director += credits.crew[i].name;
-            director += ', ';
-        }
-    }
-    director = director.substr(0, director.length - 2) + '.';
-
     const response3 = await fetch(`https://api.themoviedb.org/3/movie/${movie_id}/reviews?api_key=${key}&language=en-US&page=1`);
 
     console.log(response3);
@@ -296,42 +287,88 @@ async function movie_info(movie_id) {
                 </div>
                 <div class="col-8">
                     <div class="card-body">
-                        <h3 class="card-title">${item.title}</h3>
-                        <p class="card-text"><small>${item.release_date}</small></p>
-                        <p class="card-text">${rated}</p>
+                        <h3 class="card-title mb-0">${item.title}</h3>
+                        <p class="card-text text-secondary mt-0 mb-2"><small>${item.release_date}</small></p>
+                        <p class="card-text text-warning">${rated}</p>
+                        <p class="card-text"><h5>Length: </h5>${item.runtime} min.</p>
                         <p class="card-text"><h5>Genres: </h5>${genres}</p>
                         <p class="card-text"><h5>Overview: </h5>${item.overview}</p>
-                        <p class="card-text"><h5>Director: </h5>${director}</p>
-                        <h5 class="card-text">Cast:</h5>
-                        <div id="cast" class="row">
-                    
-                        </div>
+                        <h5 class="card-text">Director: </h5>
+                        <div id="dir" class="row"></div>
                     </div>
                 </div>
-                <div id="rw" class="col-12 bg-dark">
-                    <h4 class="pl-5 pr-5 pt-2 text-light">Review:</h4>
+                <div class="col-12">
+                    <h4 class="card-text pl-5 pt-2 pb-2 bg-dark text-light">Cast:</h4>
+                    <div id="cc" class="carousel card-carousel slide" data-ride="carousel" data-interval="false">
+                        <ol class="carousel-indicators"></ol>
+                        <div class="carousel-inner"></div>
+                        <a class="carousel-control-prev" href="#cc" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#cc" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                </div>
+                <div id="rw" class="col-12 mt-5">
+                    <h4 class="pl-5 pr-5 pt-2 pb-2 bg-dark text-light">Review:</h4>
                 </div>
             </div>
         </div>
     `);
 
-    for (i = 0; i < credits.cast.length; ++i) {
-        let cid = 'cast' + i;
-        $('#cast').append(`
-            <div id=${cid} class="col-2 mb-1">
-                <div class="card bg-dark text-light img-overlay">
-                    <img src="https://image.tmdb.org/t/p/w185${credits.cast[i].profile_path}" class="card-img" alt="Poster" onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';">
+    for (i = 0; i < credits.crew.length; ++i) {
+
+        if (credits.crew[i].job == 'Director') {
+            $('#dir').append(`
+            <div class="col-2">
+                <div class="card img-overlay bg-dark text-light">
+                    <img class="card-img" src="https://image.tmdb.org/t/p/h632${credits.crew[i].profile_path}" alt="Poster" onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';">
 
                     <div class="card-img-overlay d-flex flex-column justify-content-end hide-text text-center">
-                        <a class="a-color" href="#" onclick="cast_info(${credits.cast[i].id})">
-                            <h5 class="card-title">${credits.cast[i].name}</h5>
-                            <p class="card-text"><small>${credits.cast[i].character}</small></p>
+                        <a class="a-color" href="#" onclick="cast_info(${credits.crew[i].id})">
+                            <h5 class="card-title">${credits.crew[i].name}</h5>
                         </a>
                     </div>
                 </div>
             </div>
         `);
+        }
     }
+
+    var indicator = parseInt(credits.cast.length / 5) + 1;
+    for (i = 0; i < indicator; ++i) {
+        $('[class="carousel-indicators"]').append(`
+            <li data-target="#cc" data-slide-to="${i}"></li>
+        `);
+        $('[class="carousel-inner"]').append(`
+            <div id="cc${i}" class="carousel-item">
+                <div class="row justify-content-center"></div>
+            </div>
+        `);
+        let n = Math.min(i * 5 + 5, credits.cast.length);
+        for (j = i * 5; j < n; ++j) {
+            $(`#cc${i}`).children().append(`
+                <div class="col-2">
+                    <div class="card img-overlay bg-dark text-light">
+                        <img class="card-img" src="https://image.tmdb.org/t/p/h632${credits.cast[j].profile_path}" alt="Poster" onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';">
+            
+                        <div class="card-img-overlay d-flex flex-column justify-content-end hide-text text-center">
+                            <a class="a-color" href="#" onclick="cast_info(${credits.cast[j].id})">
+                                <h5 class="card-title">${credits.cast[j].name}</h5>
+                                <p class="card-text"><small>${credits.cast[j].character}</small></p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `);
+        }
+    }
+
+    $('[data-slide-to="0"]').addClass('active');
+    $('#cc0').addClass('active');
 
     for (const x of review) {
         $('#rw').append(`
