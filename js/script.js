@@ -69,7 +69,7 @@ async function get_list(type, page) {
                     <div class="card-img-overlay d-flex flex-column justify-content-end hide-text text-center">
                         <a class="a-color" href="#" onclick="movie_info(${item.id})">
                             <h4 class="card-title mb-0">${item.title}</h4>
-                            <p class="card-text text-white-50 mt-0 mb-2"><small>${item.release_date}</small></p>
+                            <p class="card-text text-white-50 mb-2">${item.release_date}</p>
                             <p class="card-text text-warning">${rated}</p>
                         </a>
                     </div>
@@ -182,7 +182,7 @@ async function search_movie(name, page) {
                     <div class="card-img-overlay d-flex flex-column justify-content-end hide-text text-center">
                         <a class="a-color" href="#" onclick="movie_info(${item.id})">
                             <h4 class="card-title mb-0">${item.title}</h4>
-                            <p class="card-text text-white-50 mt-0 mb-2"><small>${item.release_date}</small></p>
+                            <p class="card-text text-white-50 mb-2">${item.release_date}</p>
                             <p class="card-text text-warning">${rated}</p>
                         </a>
                     </div>
@@ -288,7 +288,7 @@ async function movie_info(movie_id) {
                 <div class="col-8">
                     <div class="card-body">
                         <h3 class="card-title mb-0">${item.title}</h3>
-                        <p class="card-text text-secondary mt-0 mb-2"><small>${item.release_date}</small></p>
+                        <p class="card-text text-secondary mb-2">${item.release_date}</p>
                         <p class="card-text text-warning">${rated}</p>
                         <p class="card-text"><h5>Length: </h5>${item.runtime} min.</p>
                         <p class="card-text"><h5>Genres: </h5>${genres}</p>
@@ -357,8 +357,8 @@ async function movie_info(movie_id) {
             
                         <div class="card-img-overlay d-flex flex-column justify-content-end hide-text text-center">
                             <a class="a-color" href="#" onclick="cast_info(${credits.cast[j].id})">
-                                <h5 class="card-title">${credits.cast[j].name}</h5>
-                                <p class="card-text"><small>${credits.cast[j].character}</small></p>
+                                <h5 class="card-title mb-0">${credits.cast[j].name}</h5>
+                                <p class="card-text text-secondary mb-2">${credits.cast[j].character}</p>
                             </a>
                         </div>
                     </div>
@@ -373,7 +373,7 @@ async function movie_info(movie_id) {
     for (const x of review) {
         $('#rw').append(`
             <div class="p-3 ml-5 mr-5 mb-3 bg-light">
-                <h6>${x.author}</h6>
+                <h5>${x.author}</h5>
                 <p>${x.content}</p>
             </div>
         `);
@@ -424,15 +424,15 @@ async function search_cast(name) {
         rated += '(' + credits.cast[i].vote_count + ')';
 
         $('#list').append(`
-            <div id=${cid} class="col-2 mb-1">
+            <div id=${cid} class="col-3 mb-1">
                 <div class="card bg-dark text-light img-overlay">
-                    <img src="https://image.tmdb.org/t/p/w185${credits.cast[i].poster_path}" class="card-img" alt="Poster" onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';">
+                    <img src="https://image.tmdb.org/t/p/h632${credits.cast[i].poster_path}" class="card-img" alt="Poster" onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';">
 
                     <div class="card-img-overlay d-flex flex-column justify-content-end hide-text text-center">
                         <a class="a-color" href="#" onclick="movie_info(${credits.cast[i].id})">
-                            <h3 class="card-title">${credits.cast[i].title}</h3>
-                            <p class="card-text"><small>${credits.cast[i].release_date}</small></p>
-                            <p class="card-text">${rated}</p>
+                            <h3 class="card-title mb-0">${credits.cast[i].title}</h3>
+                            <p class="card-text text-secondary mb-2">${credits.cast[i].release_date}</p>
+                            <p class="card-text text-warning">${rated}</p>
                         </a>
                     </div>
                 </div>
@@ -471,8 +471,8 @@ async function cast_info(person_id) {
                 </div>
                 <div class="col-8">
                     <div class="card-body">
-                        <h5 class="card-title">${item.name}</h5>
-                        <p class="card-text"><small>${item.birthday}</small></p>
+                        <h5 class="card-title mb-0">${item.name}</h5>
+                        <p class="card-text text-secondary mt-0 mb-2"><small>${item.birthday}</small></p>
                         <p class="card-text"><h5>Biography: </h5>${item.biography}</p>
                         <p class="card-text"><h5>Cast in: </h5></p>
                         <div id="cast" class="row">

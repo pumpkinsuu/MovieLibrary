@@ -1,3 +1,26 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 100%;
+}
+
+input[type=search] {
+    font-weight: 600;
+    width: 300px;
+    padding: 10px 10px;
+    border: 0;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+select {
+    font-weight: 600;
+    width: 80px;
+    padding: 5px 5px;
+    border: 0;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
 .material-icons.md-18 {
     font-size: 18px;
 }
@@ -86,29 +109,6 @@
     border-color: #dee2e6;
 }
 
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    height: 100%;
-}
-
-input[type=search] {
-    font-weight: 600;
-    width: 300px;
-    padding: 10px 10px;
-    border: 0;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-select {
-    font-weight: 600;
-    width: 80px;
-    padding: 5px 5px;
-    border: 0;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
 .footer {
     position: absolute;
     bottom: 0;
@@ -172,6 +172,25 @@ select {
 
 .card-carousel .carousel-indicators .active {
     background: #707070;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    width: 8%;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    width: 50px;
+    height: 50px;
+}
+
+.carousel-control-prev-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23ff' viewBox='0 0 8 8'%3e%3cpath d='M5.25 0l-4 4 4 4 1.5-1.5-2.5-2.5 2.5-2.5-1.5-1.5z'/%3e%3c/svg%3e");
+}
+
+.carousel-control-next-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23ff' viewBox='0 0 8 8'%3e%3cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z'/%3e%3c/svg%3e");
 }
 
 .lds-ellipsis {
