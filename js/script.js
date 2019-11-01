@@ -398,7 +398,7 @@ async function search_cast(name) {
     console.log(data);
     const list = data.results;
 
-    if (list.length != 1) {
+    if (!list.length) {
         $('#cat').append(`
             <h3><i>Star name not exist!</i></h3>
         `);
