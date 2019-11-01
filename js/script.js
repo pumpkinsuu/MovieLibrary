@@ -415,7 +415,6 @@ async function search_cast(name) {
 
     $('#list').empty();
     for (i = 0; i < credits.cast.length; ++i) {
-        let cid = 'cast' + i;
         var rated = '';
         for (j = 0; j < parseInt(credits.cast[i].vote_average / 2); ++j)
             rated += '&#9733';
@@ -424,7 +423,7 @@ async function search_cast(name) {
         rated += '(' + credits.cast[i].vote_count + ')';
 
         $('#list').append(`
-            <div id=${cid} class="col-3 mb-1">
+            <div class="col-3 mb-1">
                 <div class="card bg-dark text-light img-overlay">
                     <img src="https://image.tmdb.org/t/p/h632${credits.cast[i].poster_path}" class="card-img" alt="Poster" onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';">
 
@@ -449,17 +448,14 @@ async function cast_info(person_id) {
     loading('#list', 1);
 
     const key = 'c35160a326e0344de330c917e176e250';
-    const response = await fetch(`https://api.themoviedb.org/3/person/${person_id}?api_key=${key}&language=en-US`);
+    const response = await fetch(`https://api.themoviedb.org/3/person/${person_id}?api_key=${key}&language=en-US&append_to_response=movie_credits`);
     console.log(response);
     const item = await response.json();
     console.log(item);
+    const credits = (item.known_for_department == "Directing") ? item.movie_credits.crew : item.movie_credits.cast;
+    console.log(credits);
 
     document.title = item.name;
-
-    const response2 = await fetch(`https://api.themoviedb.org/3/person/${person_id}/movie_credits?api_key=${key}&language=en-US`);
-    console.log(response2);
-    const credits = await response2.json();
-    console.log(credits);
 
     $('#list').empty();
     $('#cast').empty();
@@ -472,11 +468,19 @@ async function cast_info(person_id) {
                 <div class="col-8">
                     <div class="card-body">
                         <h5 class="card-title mb-0">${item.name}</h5>
-                        <p class="card-text text-secondary mt-0 mb-2"><small>${item.birthday}</small></p>
+                        <p class="card-text text-secondary mt-0 mb-2">${item.birthday}</p>
                         <p class="card-text"><h5>Biography: </h5>${item.biography}</p>
-                        <p class="card-text"><h5>Cast in: </h5></p>
-                        <div id="cast" class="row">
-                    
+                        <p class="card-text"><h5>Known for: </h5></p>
+                        <div id="cc" class="carousel card-carousel slide" data-ride="carousel" data-interval="false">
+                            <div class="carousel-inner"></div>
+                            <a class="carousel-control-prev" href="#cc" role="button" data-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                            <a class="carousel-control-next" href="#cc" role="button" data-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Next</span>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -484,23 +488,57 @@ async function cast_info(person_id) {
         </div>
     `);
 
-    for (i = 0; i < credits.cast.length; ++i) {
-        let cid = 'cast' + i;
-        $('#cast').append(`
-            <div id=${cid} class="col-2 mb-1">
-                <div class="card bg-dark text-light img-overlay">
-                    <img src="https://image.tmdb.org/t/p/w185${credits.cast[i].poster_path}" class="card-img" alt="Poster" onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';">
-
-                    <div class="card-img-overlay d-flex flex-column justify-content-end hide-text text-center">
-                        <a class="a-color" href="#" onclick="movie_info(${credits.cast[i].id})">
-                            <h5 class="card-title">${credits.cast[i].title}</h5>
-                            <p class="card-text"><small>${credits.cast[i].release_date}</small></p>
-                        </a>
-                    </div>
-                </div>
+    var indicator = Math.ceil(credits.length / 2);
+    for (i = 0; i < indicator; ++i) {
+        $('[class="carousel-inner"]').append(`
+            <div id="cc${i}" class="carousel-item">
+                <div class="row"></div>
             </div>
         `);
+        let n = Math.min(i * 2 + 2, credits.length);
+        for (j = i * 2; j < n; ++j) {
+
+            var rated = '';
+            for (k = 0; k < parseInt(credits[j].vote_average / 2); ++k)
+                rated += '&#9733';
+            for (k = parseInt(credits[j].vote_average / 2); k < 5; ++k)
+                rated += '&#9734';
+            rated += '(' + credits[j].vote_count + ')';
+
+            let as = (credits[j].character) ? credits[j].character : credits[j].job;
+            if (!as)
+                as = 'Unknown';
+
+            $(`#cc${i}`).children().append(`
+                <div class="card w-100">
+                    <div class="row justify-content-center">
+                        <div class="col-2" >
+                            <img src="https://image.tmdb.org/t/p/w185${credits[j].poster_path}" class="card-img" alt="Poster" onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';" onclick="movie_info(${credits[j].id})">
+                        </div>
+                        <div class="col-3">
+                            <div class="card-body">
+                                <a class="" href="#" onclick="movie_info(${credits[j].id})">
+                                <h5 class="card-title mb-0">${credits[j].title}</h5>
+                                </a>
+                                <p class="card-text text-secondary mb-2">${credits[j].release_date}</p>
+                                <p class="card-text d-inline"><h5>As: </h5>${as}</p>
+                                <p class="card-text text-warning">${rated}</p>
+                            </div>
+                        </div>
+                        <div class="col-5">
+                            <div class="card-body">
+                                <h5 class="card-text">Overview: </h5>
+                                <p class="card-text">${credits[j].overview}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `);
+        }
     }
+
+    $('[data-slide-to="0"]').addClass('active');
+    $('#cc0').addClass('active');
 
     loading('#list', 0);
 }
