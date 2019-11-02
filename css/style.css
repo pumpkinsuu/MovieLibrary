@@ -4,19 +4,23 @@ body {
 }
 
 a.a-img:link {
+    color: #28a745;
     background-color: rgba(0, 0, 0, 0.9);
 }
 
 a.a-img:visited {
+    color: #28a745;
     background-color: rgba(0, 0, 0, 0.9);
 }
 
 a.a-img:hover {
+    color: #dc3545;
     background-color: rgba(0, 0, 0, 0.9);
     text-decoration: none;
 }
 
 a.a-img:active {
+    color: #dc3545;
     background-color: rgba(0, 0, 0, 0.9);
     text-decoration: none;
 }

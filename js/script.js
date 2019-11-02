@@ -102,7 +102,7 @@ async function get_list(type, page) {
                     
                     <div class="card-img-overlay d-flex flex-column justify-content-end">
                         <a class="a-img text-center" href="#">
-                            <h5 class="card-title text-warning mb-0">${item.title}</h5>
+                            <h5 class="card-title mb-0">${item.title}</h5>
                             <p class="card-text text-light mb-1">${date}</p>
                             <p class="card-text text-warning">${rated}</p>
                         </a>
@@ -245,7 +245,7 @@ async function search_movie(name, page) {
                     
                     <div class="card-img-overlay d-flex flex-column justify-content-end">
                         <a class="a-img text-center" href="#">
-                            <h5 class="card-title text-warning mb-0">${item.title}</h5>
+                            <h5 class="card-title mb-0">${item.title}</h5>
                             <p class="card-text text-light mb-1">${date}</p>
                             <p class="card-text text-warning">${rated}</p>
                         </a>
@@ -364,7 +364,7 @@ async function movie_info(movie_id) {
                 </div>
                 <div class="col-8">
                     <div class="card-body">
-                        <h3 class="card-title mb-0">${item.title}</h3>
+                        <h3 class="card-title text-success mb-0">${item.title}</h3>
                         <p class="card-text text-secondary mb-1">${date}</p>
                         <p class="card-text text-danger">${rated}</p>
                         <p class="card-text"><strong>Length: </strong>${length}</p>
@@ -548,7 +548,9 @@ async function search_cast(name, page) {
                     </div>
                     <div class="col-10">
                         <div class="card-body">
-                            <h3 class="card-title">${item.name}</h3>
+                            <a class="a-img" href="#">
+                                <h3 class="card-title">${item.name}</h3>
+                            </a>
                             <p class="card-text text-truncate"><strong>Known for: </strong>${films}</p>
                         </div>
                     </div>
@@ -667,7 +669,7 @@ async function cast_movie(name, person_id, page) {
                     
                     <div class="card-img-overlay d-flex flex-column justify-content-end">
                         <a class="a-img text-center" href="#">
-                            <h4 class="card-title text-warning mb-0">${item.title}</h4>
+                            <h4 class="card-title mb-0">${item.title}</h4>
                             <p class="card-text text-light mb-1">${date}</p>
                             <p class="card-text text-warning">${rated}</p>
                         </a>
@@ -713,7 +715,7 @@ async function cast_info(person_id) {
                 </div>
                 <div class="col-8">
                     <div class="card-body">
-                        <h3 class="card-title mb-0">${item.name}</h3>
+                        <h3 class="card-title text-success mb-0">${item.name}</h3>
                         <p class="card-text text-secondary mt-0 mb-2">${item.birthday}</p>
                         <p class="card-text"><h5>Biography: </h5>${item.biography}</p>
                         <p class="card-text"><h5>Known for: </h5></p>
@@ -763,8 +765,8 @@ async function cast_info(person_id) {
                         </div>
                         <div class="col-3">
                             <div class="card-body">
-                                <a class="" href="#" onclick="movie_info(${credits[j].id})">
-                                <h5 class="card-title mb-0">${credits[j].title}</h5>
+                                <a class="a-img" href="#" onclick="movie_info(${credits[j].id})">
+                                    <h5 class="card-title mb-0">${credits[j].title}</h5>
                                 </a>
                                 <p class="card-text text-secondary mb-1">${credits[j].release_date}</p>
                                 <p class="card-text d-inline"><h5>As: </h5>${as}</p>
