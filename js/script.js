@@ -40,36 +40,57 @@ function load_home(type, page) {
 async function get_list(type, page) {
 
     loading('#list', 1);
+    $('#list').empty();
 
     const key = 'c35160a326e0344de330c917e176e250';
     const response = await fetch(`https://api.themoviedb.org/3/movie/${type}?api_key=${key}&page=${page}`);
-    console.log(response);
+
+    if (response.status != 200) {
+        $('#cat').append(`
+            <h3><i>${response.statusText}</i></h3>
+        `);
+        loading('#list', 0);
+
+        return;
+    }
+
     const data = await response.json();
-    console.log(data);
     const list = data.results;
 
-    if (!list.length)
+    if (!list.length) {
+        loading('#list', 0);
         return;
+    }
 
-    $('#list').empty();
     for (const item of list) {
 
-        var rated = '';
-        for (i = 0; i < parseInt(item.vote_average / 2); ++i)
+        let date = 'Unknown';
+        if (item.release_date) {
+            date = new Date(item.release_date).toLocaleString('en-GB', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        let rated = '';
+        let n = Math.round(item.vote_average / 2)
+        for (i = 0; i < n; ++i)
             rated += '&#9733';
-        for (i = parseInt(item.vote_average / 2); i < 5; ++i)
+        for (i = n; i < 5; ++i)
             rated += '&#9734';
         rated += '(' + item.vote_count + ')';
 
         $('#list').append(`
             <div class="col-3 mb-3">
-                <div class="card bg-dark text-light img-overlay">
-                    <img src="https://image.tmdb.org/t/p/w600_and_h900_bestv2${item.poster_path}" class="card-img" alt="Poster" onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';">
-
-                    <div class="card-img-overlay d-flex flex-column justify-content-end hide-text text-center">
-                        <a class="a-color" href="#" onclick="movie_info(${item.id})">
-                            <h4 class="card-title mb-0">${item.title}</h4>
-                            <p class="card-text text-white-50 mb-2">${item.release_date}</p>
+                <div class="card bg-dark cur-select" onclick="movie_info(${item.id})">
+                    <img class="card-img" src="https://image.tmdb.org/t/p/w500${item.poster_path}" alt="Poster" 
+                        onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';">
+                    
+                    <div class="card-img-overlay d-flex flex-column justify-content-end hide">
+                        <a class="a-img text-center" href="#">
+                            <h4 class="card-title text-warning mb-0">${item.title}</h4>
+                            <p class="card-text text-light mb-2">${date}</p>
                             <p class="card-text text-warning">${rated}</p>
                         </a>
                     </div>
@@ -83,7 +104,7 @@ async function get_list(type, page) {
             <div class="col-12">
                 <nav aria-label="Page navigation">
                     <ul class="pagination justify-content-center">
-                        <li id="prev" class="page-item">
+                        <li id="prev" class="page-item" data-toggle="tooltip" title="Page 1">
                             <a class="page-link" href="#" onclick="get_list('${type}', 1)">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
@@ -97,7 +118,6 @@ async function get_list(type, page) {
         var end = (page < 6) ? 10 : page + 5;
 
         for (i = begin; i <= data.total_pages && i < end; ++i) {
-
             $('[class="pagination justify-content-center"]').append(`
                 <li id="pg${i}" class="page-item">
                     <a class="page-link" href="#" onclick="get_list('${type}', ${i})">${i}</a>
@@ -106,15 +126,14 @@ async function get_list(type, page) {
         }
 
         $('[class="pagination justify-content-center"]').append(`
-                    <li id="next" class="page-item">
-                        <a class="page-link" href="#" onclick="get_list('${type}', ${data.total_pages})">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
+            <li id="next" class="page-item" data-toggle="tooltip" title="Page ${data.total_pages}">
+                <a class="page-link" href="#" onclick="get_list('${type}', ${data.total_pages})">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
         `);
 
-        let id = "#pg" + page;
-        $(id).addClass('active');
+        $(`#pg${page}`).addClass('active');
 
         if (page == 1)
             $('#prev').addClass('disabled');
@@ -146,43 +165,61 @@ async function search_movie(name, page) {
     `);
 
     loading('#list', 1);
+    $('#list').empty();
 
     const key = 'c35160a326e0344de330c917e176e250';
     const response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${key}&language=en-US&query=${name}&page=${page}`);
-    console.log(response);
-    const data = await response.json();
-    console.log(data);
-    const list = data.results;
 
-    if (!list.length) {
+    if (response.status != 200) {
         $('#cat').append(`
-            <h3><i>Movie not exist!</i></h3>
+            <h3><i>${response.statusText}</i></h3>
         `);
-        $('#list').empty();
         loading('#list', 0);
 
         return;
     }
 
-    $('#list').empty();
+    const data = await response.json();
+    const list = data.results;
+
+    if (!list.length) {
+        $('#cat').append(`
+            <h3><i>No results found for: ${name}</i></h3>
+        `);
+        loading('#list', 0);
+
+        return;
+    }
+
     for (const item of list) {
 
-        var rated = '';
-        for (i = 0; i < parseInt(item.vote_average / 2); ++i)
+        let date = 'Unknown';
+        if (item.release_date) {
+            date = new Date(item.release_date).toLocaleString('en-GB', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        let rated = '';
+        let n = Math.round(item.vote_average / 2)
+        for (i = 0; i < n; ++i)
             rated += '&#9733';
-        for (i = parseInt(item.vote_average / 2); i < 5; ++i)
+        for (i = n; i < 5; ++i)
             rated += '&#9734';
         rated += '(' + item.vote_count + ')';
 
         $('#list').append(`
             <div class="col-3 mb-3">
-                <div class="card bg-dark text-light img-overlay">
-                    <img src="https://image.tmdb.org/t/p/w600_and_h900_bestv2${item.poster_path}" class="card-img" alt="Poster" onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';">
-
-                    <div class="card-img-overlay d-flex flex-column justify-content-end hide-text text-center">
-                        <a class="a-color" href="#" onclick="movie_info(${item.id})">
-                            <h4 class="card-title mb-0">${item.title}</h4>
-                            <p class="card-text text-white-50 mb-2">${item.release_date}</p>
+                <div class="card bg-dark cur-select" onclick="movie_info(${item.id})">
+                    <img class="card-img" src="https://image.tmdb.org/t/p/w500${item.poster_path}" alt="Poster" 
+                        onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';">
+                    
+                    <div class="card-img-overlay d-flex flex-column justify-content-end hide">
+                        <a class="a-img text-center" href="#">
+                            <h4 class="card-title text-warning mb-0">${item.title}</h4>
+                            <p class="card-text text-light mb-2">${date}</p>
                             <p class="card-text text-warning">${rated}</p>
                         </a>
                     </div>
@@ -193,11 +230,11 @@ async function search_movie(name, page) {
 
     if (data.total_pages > 1) {
         $('#list').append(`
-            <div class="col">
+            <div class="col-12">
                 <nav aria-label="Page navigation">
                     <ul class="pagination justify-content-center">
-                        <li id="prev" class="page-item">
-                            <a class="page-link" href="#" search_movie="get_list('${name}', 1)">
+                        <li id="prev" class="page-item" data-toggle="tooltip" title="Page 1">
+                            <a class="page-link" href="#" onclick="search_movie('${name}', 1)">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
                         </li>
@@ -206,11 +243,10 @@ async function search_movie(name, page) {
             </div>
         `);
 
-        var begin = (page < 6) ? 1 : page - 4;
-        var end = (page < 6) ? 10 : page + 5;
+        let begin = (page < 6) ? 1 : page - 4;
+        let end = (page < 6) ? 10 : page + 5;
 
         for (i = begin; i <= data.total_pages && i < end; ++i) {
-
             $('[class="pagination justify-content-center"]').append(`
                 <li id="pg${i}" class="page-item">
                     <a class="page-link" href="#" onclick="search_movie('${name}', ${i})">${i}</a>
@@ -219,15 +255,14 @@ async function search_movie(name, page) {
         }
 
         $('[class="pagination justify-content-center"]').append(`
-                    <li id="next" class="page-item">
-                        <a class="page-link" href="#" onclick="search_movie('${name}', ${data.total_pages})">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
+            <li id="next" class="page-item">
+                <a class="page-link" href="#" onclick="search_movie('${name}', ${data.total_pages})">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
         `);
 
-        let id = "#pg" + page;
-        $(id).addClass('active');
+        $(`#pg${page}`).addClass('active');
 
         if (page == 1)
             $('#prev').addClass('disabled');
@@ -242,63 +277,75 @@ async function movie_info(movie_id) {
 
     $('#cat').empty();
     loading('#list', 1);
+    $('#list').empty();
 
     const key = 'c35160a326e0344de330c917e176e250';
-    const response = await fetch(`https://api.themoviedb.org/3/movie/${movie_id}?api_key=${key}&language=en-US`);
-    console.log(response);
+    const response = await fetch(`https://api.themoviedb.org/3/movie/${movie_id}?api_key=${key}&language=en-US&append_to_response=credits,reviews`);
+
+    if (response.status != 200) {
+        $('#cat').append(`
+            <h3><i>${response.statusText}</i></h3>
+        `);
+        loading('#list', 0);
+
+        return;
+    }
+
     const item = await response.json();
-    console.log(item);
+    const credits = item.credits;
+    const reviews = item.reviews.results;
 
     document.title = item.title;
 
-    var genres = '';
-    for (i = 0; i < item.genres.length; ++i) {
-        genres += item.genres[i].name + ', ';
+    let date = 'Unknown';
+    if (item.release_date) {
+        date = new Date(item.release_date).toLocaleString('en-GB', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
     }
-    genres = genres.substr(0, genres.length - 2) + '.';
 
-    const response2 = await fetch(`https://api.themoviedb.org/3/movie/${movie_id}/credits?api_key=${key}`);
-    console.log(response2);
-    const credits = await response2.json();
-    console.log(credits);
-
-    const response3 = await fetch(`https://api.themoviedb.org/3/movie/${movie_id}/reviews?api_key=${key}&language=en-US&page=1`);
-
-    console.log(response3);
-    const data = await response3.json();
-    console.log(data);
-    const review = data.results;
-
-    var rated = '';
-    for (i = 0; i < parseInt(item.vote_average / 2); ++i)
+    let rated = '';
+    let n = Math.round(item.vote_average / 2)
+    for (i = 0; i < n; ++i)
         rated += '&#9733';
-    for (i = parseInt(item.vote_average / 2); i < 5; ++i)
+    for (i = n; i < 5; ++i)
         rated += '&#9734';
     rated += '(' + item.vote_count + ')';
 
+    let genres = '';
+    for (i = 0; i < item.genres.length; ++i) {
+        genres += item.genres[i].name + ', ';
+    }
+    genres = genres.substr(0, genres.length - 2);
 
-    $('#list').empty();
-    $('#cast').empty();
+    let length = 'Unknown';
+    if (item.runtime)
+        length = item.runtime + ' min';
+
     $('#list').append(`
         <div class="card mb-3">
-            <div class="row no-gutters">
+            <div class="row">
                 <div class="col-4">
-                    <img src="https://image.tmdb.org/t/p/original${item.poster_path}" class="card-img" alt="Poster" onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';"></img>
+                    <img src="https://image.tmdb.org/t/p/original${item.poster_path}" class="card-img" alt="Poster" 
+                        onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';"></img>
                 </div>
                 <div class="col-8">
                     <div class="card-body">
                         <h3 class="card-title mb-0">${item.title}</h3>
-                        <p class="card-text text-secondary mb-2">${item.release_date}</p>
-                        <p class="card-text text-warning">${rated}</p>
-                        <p class="card-text"><h5>Length: </h5>${item.runtime} min.</p>
-                        <p class="card-text"><h5>Genres: </h5>${genres}</p>
-                        <p class="card-text"><h5>Overview: </h5>${item.overview}</p>
-                        <h5 class="card-text">Director: </h5>
-                        <div id="dir" class="row"></div>
+                        <p class="card-text text-secondary mb-2">${date}</p>
+                        <p class="card-text text-danger">${rated}</p>
+                        <p class="card-text"><strong>Length: </strong>${length}</p>
+                        <p class="card-text"><strong>Genres: </strong>${genres}</p>
+                        <p class="card-text mb-0"><strong>Overview: </strong></p>
+                        <p class="card-text">${item.overview}</p>
+                        <p class="card-text"><strong>Director: </strong></p>
+                        <div id="dir" class="row no-gutters"></div>
                     </div>
                 </div>
                 <div class="col-12">
-                    <h4 class="card-text pl-5 pt-2 pb-2 bg-dark text-light">Cast:</h4>
+                    <h5 class="card-text mb-3 pl-5 pt-2 pb-2 bg-dark text-light">Cast:</h5>
                     <div id="cc" class="carousel card-carousel slide" data-ride="carousel" data-interval="false">
                         <ol class="carousel-indicators"></ol>
                         <div class="carousel-inner"></div>
@@ -320,45 +367,51 @@ async function movie_info(movie_id) {
     `);
 
     for (i = 0; i < credits.crew.length; ++i) {
-
         if (credits.crew[i].job == 'Director') {
             $('#dir').append(`
-            <div class="col-2">
-                <div class="card img-overlay bg-dark text-light">
-                    <img class="card-img" src="https://image.tmdb.org/t/p/h632${credits.crew[i].profile_path}" alt="Poster" onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';">
+                <div class="col-2">
+                    <div class="card bg-dark cur-select" onclick="cast_info(${credits.crew[i].id})">
+                        <img class="card-img" src="https://image.tmdb.org/t/p/h632${credits.crew[i].profile_path}" alt="Poster" 
+                            onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';">
 
-                    <div class="card-img-overlay d-flex flex-column justify-content-end hide-text text-center">
-                        <a class="a-color" href="#" onclick="cast_info(${credits.crew[i].id})">
-                            <h5 class="card-title">${credits.crew[i].name}</h5>
-                        </a>
+                        <div class="card-img-overlay d-flex flex-column justify-content-end hide">
+                            <a class="a-img text-center" href="#">
+                                <h5 class="card-title text-warning">${credits.crew[i].name}</h5>
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `);
+            `);
         }
     }
 
-    var indicator = parseInt(credits.cast.length / 5) + 1;
+    let indicator = Math.ceil(credits.cast.length / 5);
     for (i = 0; i < indicator; ++i) {
         $('[class="carousel-indicators"]').append(`
             <li data-target="#cc" data-slide-to="${i}"></li>
         `);
         $('[class="carousel-inner"]').append(`
             <div id="cc${i}" class="carousel-item">
-                <div class="row justify-content-center"></div>
+                <div class="row no-gutters justify-content-center"></div>
             </div>
         `);
         let n = Math.min(i * 5 + 5, credits.cast.length);
         for (j = i * 5; j < n; ++j) {
+
+            let char = 'Unknown';
+            if (credits.cast[j].character != '')
+                char = credits.cast[j].character;
+
             $(`#cc${i}`).children().append(`
                 <div class="col-2">
-                    <div class="card img-overlay bg-dark text-light">
-                        <img class="card-img" src="https://image.tmdb.org/t/p/h632${credits.cast[j].profile_path}" alt="Poster" onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';">
+                    <div class="card bg-dark cur-select" onclick="cast_info(${credits.cast[j].id})">
+                        <img class="card-img" src="https://image.tmdb.org/t/p/h632${credits.cast[j].profile_path}" alt="Poster" 
+                            onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';">
             
-                        <div class="card-img-overlay d-flex flex-column justify-content-end hide-text text-center">
-                            <a class="a-color" href="#" onclick="cast_info(${credits.cast[j].id})">
-                                <h5 class="card-title mb-0">${credits.cast[j].name}</h5>
-                                <p class="card-text text-secondary mb-2">${credits.cast[j].character}</p>
+                        <div class="card-img-overlay d-flex flex-column justify-content-end hide">
+                            <a class="a-img text-center" href="#">
+                                <h5 class="card-title text-warning mb-0">${credits.cast[j].name}</h5>
+                                <p class="card-text text-light mb-2">as ${char}</p>
                             </a>
                         </div>
                     </div>
@@ -370,7 +423,15 @@ async function movie_info(movie_id) {
     $('[data-slide-to="0"]').addClass('active');
     $('#cc0').addClass('active');
 
-    for (const x of review) {
+    if (!reviews.length) {
+        $('#rw').append(`
+            <div class="p-3 ml-5 mr-5 mb-3 bg-light">
+                <h5>No Review.</h5>
+            </div>
+        `);
+    }
+
+    for (const x of reviews) {
         $('#rw').append(`
             <div class="p-3 ml-5 mr-5 mb-3 bg-light">
                 <h5>${x.author}</h5>

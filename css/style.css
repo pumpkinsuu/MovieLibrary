@@ -3,22 +3,54 @@ body {
     height: 100%;
 }
 
-input[type=search] {
+.search {
     font-weight: 600;
     width: 300px;
     padding: 10px 10px;
     border: 0;
     border-radius: 4px;
     box-sizing: border-box;
+    outline: 0;
 }
 
-select {
+.select {
     font-weight: 600;
     width: 80px;
     padding: 5px 5px;
     border: 0;
     border-radius: 4px;
     box-sizing: border-box;
+    outline: 0;
+}
+
+a.a-img:link {
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+a.a-img:visited {
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+a.a-img:hover {
+    background-color: rgba(0, 0, 0, 0.9);
+    text-decoration: none;
+}
+
+a.a-img:active {
+    background-color: rgba(0, 0, 0, 0.9);
+    text-decoration: none;
+}
+
+.hide {
+    opacity: 0;
+}
+
+.hide:hover {
+    opacity: 1;
+}
+
+.cur-select {
+    cursor: pointer;
 }
 
 .material-icons.md-18 {
@@ -118,43 +150,6 @@ select {
 
 .card-img-overlay {
     padding: 0;
-}
-
-.hide-text {
-    opacity: 0;
-}
-
-.img-overlay:hover .hide-text {
-    opacity: 1;
-}
-
-.img-overlay:hover {
-    opacity: 0.95;
-}
-
-.a-color:link {
-    color: lavender;
-    background-color: rgba(0, 0, 0, 0.9);
-}
-
-/* visited link */
-.a-color:visited {
-    color: lavender;
-    background-color: rgba(0, 0, 0, 0.9);
-}
-
-/* mouse over link */
-.a-color:hover {
-    color: orange;
-    background-color: rgba(0, 0, 0, 0.9);
-    text-decoration: none;
-}
-
-/* selected link */
-.a-color:active {
-    color: orange;
-    background-color: rgba(0, 0, 0, 0.9);
-    text-decoration: none;
 }
 
 .card-carousel .carousel-indicators {
