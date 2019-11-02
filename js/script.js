@@ -769,7 +769,7 @@ async function cast_info(person_id) {
                                     <h5 class="card-title mb-0">${credits[j].title}</h5>
                                 </a>
                                 <p class="card-text text-secondary mb-1">${credits[j].release_date}</p>
-                                <p class="card-text d-inline"><h5>As: </h5>${as}</p>
+                                <p class="card-text"><strong>As: </strong>${as}</p>
                                 <p class="card-text text-danger">${rated}</p>
                             </div>
                         </div>
