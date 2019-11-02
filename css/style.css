@@ -3,6 +3,24 @@ body {
     height: 100%;
 }
 
+a.a-img:link {
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+a.a-img:visited {
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+a.a-img:hover {
+    background-color: rgba(0, 0, 0, 0.9);
+    text-decoration: none;
+}
+
+a.a-img:active {
+    background-color: rgba(0, 0, 0, 0.9);
+    text-decoration: none;
+}
+
 .search {
     font-weight: 600;
     width: 300px;
@@ -23,30 +41,20 @@ body {
     outline: 0;
 }
 
-a.a-img:link {
-    background-color: rgba(0, 0, 0, 0.9);
+.mm {
+    margin: 5%;
 }
 
-a.a-img:visited {
-    background-color: rgba(0, 0, 0, 0.9);
-}
-
-a.a-img:hover {
-    background-color: rgba(0, 0, 0, 0.9);
-    text-decoration: none;
-}
-
-a.a-img:active {
-    background-color: rgba(0, 0, 0, 0.9);
-    text-decoration: none;
-}
-
-.hide {
+.card.hl .a-img {
     opacity: 0;
 }
 
-.hide:hover {
+.card:hover.hl .a-img {
     opacity: 1;
+}
+
+.card:hover.hl .card-img {
+    opacity: 0.85;
 }
 
 .cur-select {
