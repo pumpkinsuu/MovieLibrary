@@ -25,9 +25,9 @@
     <title>Now Playing - MovieLibrary</title>
 </head>
 
-<body class="bg-light page-container" onload="load_home('now_playing', 1)">
+<body class="bg-light page-container" onload="get_list('now_playing', 1, showing)">
     <div class=".container-fluid">
-        <nav class="navbar sticky-top navbar-dark bg-dark">
+        <nav class="navbar sticky-top navbar-dark bg-gd">
             <button class="btn btn-outline-light" onclick="location.href = 'index.html'">
                 <h1>MovieLibrary</h1>
             </button>
@@ -65,8 +65,12 @@
 
         <div id="list" class="row mm"></div>
     </div>
-    <footer class="footer text-center text-light bg-dark">
-        <h3>MovieLibrary</h3>
+    <footer class="footer text-center bg-gd">
+        <h3 class="text-light pt-2"><strong>Đồ án giữa kỳ - </strong>MovieLibrary</h3>
+        <a class="text-success" href="https://gitlab.com/pumpkinsuu/movielibrary" alt="repository">
+            <strong>Repository: </strong>
+            <i>https://gitlab.com/pumpkinsuu/movielibrary</i>
+        </a>
     </footer>
 </body>
 

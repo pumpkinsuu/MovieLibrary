@@ -10,17 +10,17 @@ function showing() {
     $('#loading').hide();
 }
 
-function load_home(type, page) {
+async function get_list(type, page, cb) {
 
     $('#cat').empty();
     $('#cat').append(`
-        <button class="btn btn-outline-dark" onclick="load_home('popular', 1)">
+        <button class="btn btn-outline-light" onclick="get_list('popular', 1, showing)">
             <h2>Popular</h2>
         </button>
-        <button class="btn btn-outline-dark ml-2 mr-2" onclick="load_home('now_playing', 1)">
+        <button class="btn btn-outline-light ml-2 mr-2" onclick="get_list('now_playing', 1, showing)">
             <h2>Now Playing</h2>
         </button>
-        <button class="btn btn-outline-dark" onclick="load_home('top_rated', 1)">
+        <button class="btn btn-outline-light" onclick="get_list('top_rated', 1, showing)">
             <h2>Top Rated</h2>
         </button>
     `);
@@ -36,11 +36,6 @@ function load_home(type, page) {
         document.title = 'Popular - MovieLibrary';
     }
 
-    get_list(type, page);
-}
-
-async function get_list(type, page) {
-
     hiding();
     $('#list').empty();
 
@@ -53,7 +48,7 @@ async function get_list(type, page) {
         $('#cat').append(`
             <h3><i>${response.status}</i></h3>
         `);
-        showing();
+        cb();
         return;
     }
 
@@ -64,7 +59,7 @@ async function get_list(type, page) {
         $('#cat').append(`
             <h3><i>No movies.</i></h3>
         `);
-        showing();
+        cb();
         return;
     }
 
@@ -94,11 +89,13 @@ async function get_list(type, page) {
             rated += '&#9734';
         rated += '(' + item.vote_count + ')';
 
+        let img = new Image();
+        img.src = `https://image.tmdb.org/t/p/w300_and_h450_bestv2${item.poster_path}`;
+
         $(`#row${parseInt(k / 5)}`).append(`
             <div class="col-2 mb-4">
-                <div class="card cur-select hl h-100" onclick="movie_info(${item.id})">
-                    <img class="card-img" src="https://image.tmdb.org/t/p/w500${item.poster_path}" alt="Poster" 
-                        onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';">
+                <div class="card shadow border-dark cur-select hl h-100" onclick="movie_info(${item.id}, showing)">
+                    <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_picture_available.png'">
                     
                     <div class="card-img-overlay d-flex flex-column justify-content-end">
                         <a class="a-img text-center" href="#">
@@ -119,7 +116,7 @@ async function get_list(type, page) {
                 <nav aria-label="Page navigation">
                     <ul class="pagination justify-content-center">
                         <li id="prev" class="page-item" data-toggle="tooltip" title="Page 1">
-                            <a class="page-link" href="#" onclick="get_list('${type}', 1)">
+                            <a class="page-link" href="#" onclick="get_list('${type}', 1, showing)">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
                         </li>
@@ -134,14 +131,14 @@ async function get_list(type, page) {
         for (i = begin; i <= data.total_pages && i < end; ++i) {
             $('[class="pagination justify-content-center"]').append(`
                 <li id="pg${i}" class="page-item">
-                    <a class="page-link" href="#" onclick="get_list('${type}', ${i})">${i}</a>
+                    <a class="page-link" href="#" onclick="get_list('${type}', ${i}, showing)">${i}</a>
                 </li>
             `);
         }
 
         $('[class="pagination justify-content-center"]').append(`
             <li id="next" class="page-item" data-toggle="tooltip" title="Page ${data.total_pages}">
-                <a class="page-link" href="#" onclick="get_list('${type}', ${data.total_pages})">
+                <a class="page-link" href="#" onclick="get_list('${type}', ${data.total_pages}, showing)">
                     <span aria-hidden="true">&raquo;</span>
                 </a>
             </li>
@@ -155,7 +152,7 @@ async function get_list(type, page) {
             $('#next').addClass('disabled');
     }
 
-    showing();
+    cb();
 }
 
 function search_input() {
@@ -165,14 +162,14 @@ function search_input() {
 
     if ($('select').val() == 'movie') {
         document.title = 'Search movies by title';
-        search_movie($('#search').val(), 1);
+        search_movie($('#search').val(), 1, showing);
     } else {
         document.title = 'Searching movies by cast';
-        search_cast($('#search').val(), 1);
+        search_cast($('#search').val(), 1, showing);
     }
 }
 
-async function search_movie(name, page) {
+async function search_movie(name, page, cb) {
 
     $('#cat').empty();
     $('#cat').append(`
@@ -191,7 +188,7 @@ async function search_movie(name, page) {
         $('#cat').append(`
             <h3><i>${response.status}</i></h3>
         `);
-        showing();
+        cb();
         return;
     }
 
@@ -202,12 +199,12 @@ async function search_movie(name, page) {
         $('#cat').append(`
             <h3><i>There are no results that match your search.</i></h3>
         `);
-        showing();
+        cb();
         return;
     }
 
     if (list.length == '1') {
-        movie_info(list[0].id, 1);
+        movie_info(list[0].id, 1, showing);
         return;
     }
 
@@ -237,11 +234,13 @@ async function search_movie(name, page) {
             rated += '&#9734';
         rated += '(' + item.vote_count + ')';
 
+        let img = new Image();
+        img.src = `https://image.tmdb.org/t/p/w300_and_h450_bestv2${item.poster_path}`;
+
         $(`#row${parseInt(k / 5)}`).append(`
             <div class="col-2 mb-4">
-                <div class="card cur-select hl h-100" onclick="movie_info(${item.id})">
-                    <img class="card-img" src="https://image.tmdb.org/t/p/w500${item.poster_path}" alt="Poster" 
-                        onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';">
+                <div class="card shadow border-dark cur-select hl h-100" onclick="movie_info(${item.id}, showing)">
+                    <img class="card-img" src=${img.src} alt="Poster">
                     
                     <div class="card-img-overlay d-flex flex-column justify-content-end">
                         <a class="a-img text-center" href="#">
@@ -262,7 +261,7 @@ async function search_movie(name, page) {
                 <nav aria-label="Page navigation">
                     <ul class="pagination justify-content-center">
                         <li id="prev" class="page-item" data-toggle="tooltip" title="Page 1">
-                            <a class="page-link" href="#" onclick="search_movie('${name}', 1)">
+                            <a class="page-link" href="#" onclick="search_movie('${name}', 1, showing)">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
                         </li>
@@ -277,14 +276,14 @@ async function search_movie(name, page) {
         for (i = begin; i <= data.total_pages && i < end; ++i) {
             $('[class="pagination justify-content-center"]').append(`
                 <li id="pg${i}" class="page-item">
-                    <a class="page-link" href="#" onclick="search_movie('${name}', ${i})">${i}</a>
+                    <a class="page-link" href="#" onclick="search_movie('${name}', ${i}, showing)">${i}</a>
                 </li>
             `);
         }
 
         $('[class="pagination justify-content-center"]').append(`
             <li id="next" class="page-item" data-toggle="tooltip" title="Page ${data.total_pages}">
-                <a class="page-link" href="#" onclick="search_movie('${name}', ${data.total_pages})">
+                <a class="page-link" href="#" onclick="search_movie('${name}', ${data.total_pages}, showing)">
                     <span aria-hidden="true">&raquo;</span>
                 </a>
             </li>
@@ -298,10 +297,10 @@ async function search_movie(name, page) {
             $('#next').addClass('disabled');
     }
 
-    showing();
+    cb();
 }
 
-async function movie_info(movie_id) {
+async function movie_info(movie_id, cb) {
 
     $('#cat').empty();
     hiding();
@@ -314,7 +313,7 @@ async function movie_info(movie_id) {
         $('#cat').append(`
             <h3><i>${response.status}</i></h3>
         `);
-        showing();
+        cb();
         return;
     }
 
@@ -355,12 +354,14 @@ async function movie_info(movie_id) {
     if (item.runtime)
         length = item.runtime + ' min';
 
+    let img = new Image();
+    img.src = `https://image.tmdb.org/t/p/w600_and_h900_bestv2${item.poster_path}`;
+
     $('#list').append(`
-        <div class="card mb-3 w-100">
+        <div class="card shadow border-dark bg-tran-1 mb-3 w-100">
             <div class="row">
                 <div class="col-4">
-                    <img class="card-img" src="https://image.tmdb.org/t/p/original${item.poster_path}" alt="Poster" 
-                        onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';"></img>
+                    <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_picture_available.png'">
                 </div>
                 <div class="col-8">
                     <div class="card-body">
@@ -376,13 +377,13 @@ async function movie_info(movie_id) {
                     </div>
                 </div>
                 <div class="col-12">
-                    <h5 class="card-text mb-3 pl-5 pt-2 pb-2 bg-dark text-light">Cast:</h5>
+                    <h4 class="card-text mt-0 mb-0 pl-5 pt-2 text-light bg-tran-2">Cast:</h4>
                     <div id="cc" class="carousel card-carousel slide" data-ride="carousel" data-interval="false">
                         
                     </div>
                 </div>
                 <div id="rw" class="col-12 mt-5">
-                    <h4 class="pl-5 pr-5 pt-2 pb-2 bg-dark text-light">Review:</h4>
+                    <h4 class="pl-5 pt-2 pb-2 text-light bg-tran-2">Review:</h4>
                 </div>
             </div>
         </div>
@@ -392,12 +393,15 @@ async function movie_info(movie_id) {
         $('#dir').append('<p class="card-text">Unknown</p>');
     else {
         for (const x of credits.crew) {
+
+            let img = new Image();
+            img.src = `https://image.tmdb.org/t/p/w300_and_h450_bestv2${x.profile_path}`;
+
             if (x.job == 'Director') {
                 $('#dir').append(`
                     <div class="col-2">
                         <div class="card bg-dark cur-select hl h-100">
-                            <img class="card-img" src="https://image.tmdb.org/t/p/h632${x.profile_path}" alt="Poster" 
-                                onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';">
+                            <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_profile_available.png'">
     
                             <div class="card-img-overlay d-flex flex-column justify-content-end">
                                 <a class="a-img text-center" href="#">
@@ -445,11 +449,13 @@ async function movie_info(movie_id) {
                 if (credits.cast[j].character != '')
                     char = credits.cast[j].character;
 
+                let img = new Image();
+                img.src = `https://image.tmdb.org/t/p/w300_and_h450_bestv2${credits.cast[j].profile_path}`;
+
                 $(`#cc${i}`).children().append(`
                     <div class="col-2">
-                        <div class="card bg-dark cur-select hl h-100" onclick="cast_info(${credits.cast[j].id})">
-                            <img class="card-img" src="https://image.tmdb.org/t/p/h632${credits.cast[j].profile_path}" alt="Poster" 
-                                onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';">
+                        <div class="card bg-dark cur-select hl h-100" onclick="cast_info(${credits.cast[j].id}, showing)">
+                            <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_profile_available.png'">
                 
                             <div class="card-img-overlay d-flex flex-column justify-content-end">
                                 <a class="a-img text-center" href="#">
@@ -469,14 +475,14 @@ async function movie_info(movie_id) {
 
     if (!reviews.length) {
         $('#rw').append(`
-            <div class="p-3 ml-5 mr-5 mb-3 bg-light">
+            <div class="p-3 ml-5 mr-5 mb-3 bg-tran-1">
                 <h5>No user reviews.</h5>
             </div>
         `);
     } else {
         for (const x of reviews) {
             $('#rw').append(`
-                <div class="p-3 ml-5 mr-5 mb-3 bg-light">
+                <div class="p-3 ml-5 mr-5 mb-3 bg-tran-1">
                     <h5>${x.author}</h5>
                     <p>${x.content}</p>
                 </div>
@@ -484,10 +490,10 @@ async function movie_info(movie_id) {
         }
     }
 
-    showing();
+    cb();
 }
 
-async function search_cast(name, page) {
+async function search_cast(name, page, cb) {
 
     $('#cat').empty();
     $('#cat').append(`
@@ -506,7 +512,7 @@ async function search_cast(name, page) {
         $('#cat').append(`
             <h3><i>${response.status}</i></h3>
         `);
-        showing();
+        cb();
         return;
     }
 
@@ -517,12 +523,12 @@ async function search_cast(name, page) {
         $('#cat').append(`
             <h3><i>There are no results that match your search.</i></h3>
         `);
-        showing();
+        cb();
         return;
     }
 
     if (list.length == 1) {
-        cast_movie(list[0].name, list[0].id, 1);
+        cast_movie(list[0].name, list[0].id, 1, showing);
         return;
     }
 
@@ -539,12 +545,14 @@ async function search_cast(name, page) {
         else
             films = films.substr(0, films.length - 2) + '.';
 
+        let img = new Image();
+        img.src = `https://image.tmdb.org/t/p/w185_and_h278_bestv2${item.profile_path}`;
+
         $('#list').append(`
-            <div class="card cur-select hl w-50" onclick="cast_movie('${item.name}', ${item.id}, 1)">
+            <div class="card shadow border-dark bg-tran-1 cur-select hl w-50" onclick="cast_movie('${item.name}', ${item.id}, 1, showing)">
                 <div class="row">
                     <div class="col-2">
-                        <img class="card-img" src="https://image.tmdb.org/t/p/w185${item.profile_path}" alt="Poster" 
-                            onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';"></img>
+                        <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_profile_available.png'">
                     </div>
                     <div class="col-10">
                         <div class="card-body">
@@ -561,11 +569,11 @@ async function search_cast(name, page) {
 
     if (data.total_pages > 1) {
         $('#list').append(`
-            <div class="col-12">
+            <div class="col-12 mt-5">
                 <nav aria-label="Page navigation">
                     <ul class="pagination justify-content-center">
                         <li id="prev" class="page-item" data-toggle="tooltip" title="Page 1">
-                            <a class="page-link" href="#" onclick="search_cast('${name}', 1)">
+                            <a class="page-link" href="#" onclick="search_cast('${name}', 1, showing)">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
                         </li>
@@ -580,14 +588,14 @@ async function search_cast(name, page) {
         for (i = begin; i <= data.total_pages && i < end; ++i) {
             $('[class="pagination justify-content-center"]').append(`
                 <li id="pg${i}" class="page-item">
-                    <a class="page-link" href="#" onclick="search_cast('${name}', ${i})">${i}</a>
+                    <a class="page-link" href="#" onclick="search_cast('${name}', ${i}, showing)">${i}</a>
                 </li>
             `);
         }
 
         $('[class="pagination justify-content-center"]').append(`
             <li id="next" class="page-item" data-toggle="tooltip" title="Page ${data.total_pages}">
-                <a class="page-link" href="#" onclick="search_cast('${name}', ${data.total_pages})">
+                <a class="page-link" href="#" onclick="search_cast('${name}', ${data.total_pages}, showing)">
                     <span aria-hidden="true">&raquo;</span>
                 </a>
             </li>
@@ -601,10 +609,10 @@ async function search_cast(name, page) {
             $('#next').addClass('disabled');
     }
 
-    showing();
+    cb();
 }
 
-async function cast_movie(name, person_id, page) {
+async function cast_movie(name, person_id, page, cb) {
 
     $('#cat').empty();
     $('#cat').append(`
@@ -623,15 +631,23 @@ async function cast_movie(name, person_id, page) {
         $('#cat').append(`
             <h3><i>${response.status}</i></h3>
         `);
-        showing();
+        cb();
         return;
     }
 
     const data = await response.json();
     const list = data.cast;
 
+    if (!list.length) {
+        $('#cat').append(`
+            <h3><i>There are no results that match your search.</i></h3>
+        `);
+        cb();
+        return;
+    }
+
     if (list.length == '1') {
-        movie_info(list[0].id, 1);
+        movie_info(list[0].id, showing);
         return;
     }
 
@@ -661,11 +677,13 @@ async function cast_movie(name, person_id, page) {
             rated += '&#9734';
         rated += '(' + item.vote_count + ')';
 
+        let img = new Image();
+        img.src = `https://image.tmdb.org/t/p/w300_and_h450_bestv2${item.poster_path}`;
+
         $(`#row${parseInt(k / 5)}`).append(`
             <div class="col-2 mb-4">
-                <div class="card cur-select hl h-100" onclick="movie_info(${item.id})">
-                    <img class="card-img" src="https://image.tmdb.org/t/p/w500${item.poster_path}" alt="Poster" 
-                        onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';">
+                <div class="card shadow border-dark cur-select hl h-100" onclick="movie_info(${item.id}, showing)">
+                    <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_picture_available.png'">
                     
                     <div class="card-img-overlay d-flex flex-column justify-content-end">
                         <a class="a-img text-center" href="#">
@@ -680,10 +698,10 @@ async function cast_movie(name, person_id, page) {
         ++k;
     }
 
-    showing();
+    cb();
 }
 
-async function cast_info(person_id) {
+async function cast_info(person_id, cb) {
 
     $('#cat').empty();
     hiding();
@@ -698,7 +716,7 @@ async function cast_info(person_id) {
         $('#cat').append(`
             <h3><i>${response.status}</i></h3>
         `);
-        showing();
+        cb();
         return;
     }
 
@@ -716,19 +734,22 @@ async function cast_info(person_id) {
         });
     }
 
+    let img = new Image();
+    img.src = `https://image.tmdb.org/t/p/w600_and_h900_bestv2${item.profile_path}`;
+
     $('#list').append(`
-        <div class="card mb-3">
+        <div class="card shadow border-dark bg-tran-1 mb-3 w-100">
             <div class="row no-gutters">
                 <div class="col-4">
-                    <img src="https://image.tmdb.org/t/p/original${item.profile_path}" class="card-img" alt="Poster" onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';"></img>
+                    <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_profile_available.png'">
                 </div>
                 <div class="col-8">
                     <div class="card-body">
                         <h3 class="card-title text-success mb-0">${item.name}</h3>
-                        <p class="card-text text-secondary mt-0 mb-2">${date}</p>
+                        <p class="card-text text-secondary ">${date}</p>
                         <p class="card-text"><h5>Biography: </h5>${item.biography}</p>
                         <p class="card-text"><h5>Known for: </h5></p>
-                        <div id="cc" class="carousel card-carousel slide" data-ride="carousel" data-interval="false">
+                        <div id="cc" class="carousel card-carousel slide mt-5" data-ride="carousel" data-interval="false">
                             <div class="carousel-inner"></div>
                             <a class="carousel-control-prev" href="#cc" role="button" data-slide="prev">
                                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -779,23 +800,26 @@ async function cast_info(person_id) {
                 if (!as)
                     as = 'Unknown';
 
+                let img = new Image();
+                img.src = `https://image.tmdb.org/t/p/w185_and_h278_bestv2${credits[j].poster_path}`;
+
                 $(`#cc${i}`).children().append(`
-                    <div class="card w-100 h-100">
+                    <div class="card border-dark bg-tran-1 w-100 ml-5 mr-5">
                         <div class="row justify-content-center">
-                            <div class="col-2 cur-select hl" >
-                                <img src="https://image.tmdb.org/t/p/w185${credits[j].poster_path}" class="card-img" alt="Poster" onerror="if (this.src != 'img/No_picture_available.png') this.src = 'img/No_picture_available.png';" onclick="movie_info(${credits[j].id})">
+                            <div class="col-2 cur-select" onclick="movie_info(${credits[j].id}, showing)">
+                                <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_picture_available.png'">
                             </div>
-                            <div class="col-3">
+                            <div class="col-4">
                                 <div class="card-body">
-                                    <a class="a-img" href="#" onclick="movie_info(${credits[j].id})">
+                                    <a class="a-img" href="#" onclick="movie_info(${credits[j].id}, showing)">
                                         <h5 class="card-title mb-0">${credits[j].title}</h5>
                                     </a>
                                     <p class="card-text text-secondary mb-1">${date}</p>
-                                    <p class="card-text"><strong>As: </strong>${as}</p>
                                     <p class="card-text text-danger">${rated}</p>
+                                    <p class="card-text"><strong>As: </strong>${as}</p>
                                 </div>
                             </div>
-                            <div class="col-5">
+                            <div class="col-6">
                                 <div class="card-body">
                                     <h5 class="card-text">Overview: </h5>
                                     <p class="card-text text-truncate">${credits[j].overview}</p>
@@ -811,5 +835,5 @@ async function cast_info(person_id) {
         $('#cc0').addClass('active');
     }
 
-    showing();
+    cb();
 }
