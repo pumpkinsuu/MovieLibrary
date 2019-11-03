@@ -14,14 +14,14 @@ async function get_list(type, page, cb) {
 
     $('#cat').empty();
     $('#cat').append(`
-        <button class="btn btn-outline-light" onclick="get_list('popular', 1, showing)">
-            <h2>Popular</h2>
+        <button class="btn btn-outline-light text-3d" onclick="get_list('popular', 1, showing)">
+            <h1>Popular</h1>
         </button>
-        <button class="btn btn-outline-light ml-2 mr-2" onclick="get_list('now_playing', 1, showing)">
-            <h2>Now Playing</h2>
+        <button class="btn btn-outline-light text-3d ml-2 mr-2" onclick="get_list('now_playing', 1, showing)">
+            <h1>Now Playing</h1>
         </button>
-        <button class="btn btn-outline-light" onclick="get_list('top_rated', 1, showing)">
-            <h2>Top Rated</h2>
+        <button class="btn btn-outline-light text-3d" onclick="get_list('top_rated', 1, showing)">
+            <h1>Top Rated</h1>
         </button>
     `);
 
@@ -94,7 +94,7 @@ async function get_list(type, page, cb) {
 
         $(`#row${parseInt(k / 5)}`).append(`
             <div class="col-2 mb-4">
-                <div class="card shadow border-dark cur-select hl h-100" onclick="movie_info(${item.id}, showing)">
+                <div class="card sd border-dark cur-select hl h-100" onclick="movie_info(${item.id}, showing)">
                     <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_picture_available.png'">
                     
                     <div class="card-img-overlay d-flex flex-column justify-content-end">
@@ -239,7 +239,7 @@ async function search_movie(name, page, cb) {
 
         $(`#row${parseInt(k / 5)}`).append(`
             <div class="col-2 mb-4">
-                <div class="card shadow border-dark cur-select hl h-100" onclick="movie_info(${item.id}, showing)">
+                <div class="card sd border-dark cur-select hl h-100" onclick="movie_info(${item.id}, showing)">
                     <img class="card-img" src=${img.src} alt="Poster">
                     
                     <div class="card-img-overlay d-flex flex-column justify-content-end">
@@ -358,7 +358,7 @@ async function movie_info(movie_id, cb) {
     img.src = `https://image.tmdb.org/t/p/w600_and_h900_bestv2${item.poster_path}`;
 
     $('#list').append(`
-        <div class="card shadow border-dark bg-tran-1 mb-3 w-100">
+        <div class="card sd border-dark bg-tran-1 mb-3 w-100">
             <div class="row">
                 <div class="col-4">
                     <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_picture_available.png'">
@@ -400,7 +400,7 @@ async function movie_info(movie_id, cb) {
             if (x.job == 'Director') {
                 $('#dir').append(`
                     <div class="col-2">
-                        <div class="card bg-dark cur-select hl h-100">
+                        <div class="card bg-dark h-100">
                             <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_profile_available.png'">
     
                             <div class="card-img-overlay d-flex flex-column justify-content-end">
@@ -454,7 +454,7 @@ async function movie_info(movie_id, cb) {
 
                 $(`#cc${i}`).children().append(`
                     <div class="col-2">
-                        <div class="card bg-dark cur-select hl h-100" onclick="cast_info(${credits.cast[j].id}, showing)">
+                        <div class="card sd bg-dark cur-select hl h-100" onclick="cast_info(${credits.cast[j].id}, showing)">
                             <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_profile_available.png'">
                 
                             <div class="card-img-overlay d-flex flex-column justify-content-end">
@@ -549,7 +549,7 @@ async function search_cast(name, page, cb) {
         img.src = `https://image.tmdb.org/t/p/w185_and_h278_bestv2${item.profile_path}`;
 
         $('#list').append(`
-            <div class="card shadow border-dark bg-tran-1 cur-select hl w-50" onclick="cast_movie('${item.name}', ${item.id}, 1, showing)">
+            <div class="card sd border-dark bg-tran-1 cur-select hl w-50" onclick="cast_movie('${item.name}', ${item.id}, 1, showing)">
                 <div class="row">
                     <div class="col-2">
                         <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_profile_available.png'">
@@ -682,7 +682,7 @@ async function cast_movie(name, person_id, page, cb) {
 
         $(`#row${parseInt(k / 5)}`).append(`
             <div class="col-2 mb-4">
-                <div class="card shadow border-dark cur-select hl h-100" onclick="movie_info(${item.id}, showing)">
+                <div class="card sd border-dark cur-select hl h-100" onclick="movie_info(${item.id}, showing)">
                     <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_picture_available.png'">
                     
                     <div class="card-img-overlay d-flex flex-column justify-content-end">
@@ -738,7 +738,7 @@ async function cast_info(person_id, cb) {
     img.src = `https://image.tmdb.org/t/p/w600_and_h900_bestv2${item.profile_path}`;
 
     $('#list').append(`
-        <div class="card shadow border-dark bg-tran-1 mb-3 w-100">
+        <div class="card sd border-dark bg-tran-1 mb-3 w-100">
             <div class="row no-gutters">
                 <div class="col-4">
                     <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_profile_available.png'">
@@ -804,7 +804,7 @@ async function cast_info(person_id, cb) {
                 img.src = `https://image.tmdb.org/t/p/w185_and_h278_bestv2${credits[j].poster_path}`;
 
                 $(`#cc${i}`).children().append(`
-                    <div class="card border-dark bg-tran-1 w-100 ml-5 mr-5">
+                    <div class="card sd border-dark bg-tran-1 w-100 ml-5 mr-5">
                         <div class="row justify-content-center">
                             <div class="col-2 cur-select" onclick="movie_info(${credits[j].id}, showing)">
                                 <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_picture_available.png'">
