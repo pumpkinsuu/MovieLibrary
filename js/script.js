@@ -240,7 +240,7 @@ async function search_movie(name, page, cb) {
         $(`#row${parseInt(k / 5)}`).append(`
             <div class="col-2 mb-4">
                 <div class="card sd border-dark cur-select hl h-100" onclick="movie_info(${item.id}, showing)">
-                    <img class="card-img" src=${img.src} alt="Poster">
+                    <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_picture_available.png'">
                     
                     <div class="card-img-overlay d-flex flex-column justify-content-end">
                         <a class="a-img text-center" href="#">
@@ -400,7 +400,7 @@ async function movie_info(movie_id, cb) {
             if (x.job == 'Director') {
                 $('#dir').append(`
                     <div class="col-2">
-                        <div class="card bg-dark h-100">
+                        <div class="card bg-dark hl h-100">
                             <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_profile_available.png'">
     
                             <div class="card-img-overlay d-flex flex-column justify-content-end">
