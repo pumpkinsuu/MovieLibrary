@@ -651,18 +651,21 @@ async function cast_movie(name, person_id, page, cb) {
         return;
     }
 
-    let k = 0;
-    for (const item of list) {
+    let l = (page - 1) * 20;
+    console.log(l);
+    console.log(list.length);
+
+    for (k = l; k < list.length && k < l + 20; ++k) {
 
         if (k % 5 == 0) {
             $('#list').append(`
-                <div id="row${parseInt(k / 5)}" class="row justify-content-center w-100"></div>
-            `);
+            <div id="row${parseInt(k / 5)}" class="row justify-content-center w-100"></div>
+        `);
         }
 
         let date = 'Unknown';
-        if (item.release_date) {
-            date = new Date(item.release_date).toLocaleString('en-GB', {
+        if (list[k].release_date) {
+            date = new Date(list[k].release_date).toLocaleString('en-GB', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
@@ -670,32 +673,74 @@ async function cast_movie(name, person_id, page, cb) {
         }
 
         let rated = '';
-        let n = Math.round(item.vote_average / 2)
+        let n = Math.round(list[k].vote_average / 2)
         for (i = 0; i < n; ++i)
             rated += '&#9733';
         for (i = n; i < 5; ++i)
             rated += '&#9734';
-        rated += '(' + item.vote_count + ')';
+        rated += '(' + list[k].vote_count + ')';
 
         let img = new Image();
-        img.src = `https://image.tmdb.org/t/p/w300_and_h450_bestv2${item.poster_path}`;
+        img.src = `https://image.tmdb.org/t/p/w300_and_h450_bestv2${list[k].poster_path}`;
 
         $(`#row${parseInt(k / 5)}`).append(`
-            <div class="col-2 mb-4">
-                <div class="card sd border-dark cur-select hl h-100" onclick="movie_info(${item.id}, showing)">
-                    <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_picture_available.png'">
-                    
-                    <div class="card-img-overlay d-flex flex-column justify-content-end">
-                        <a class="a-img text-center" href="#">
-                            <h4 class="card-title mb-0">${item.title}</h4>
-                            <p class="card-text text-light mb-1">${date}</p>
-                            <p class="card-text text-warning">${rated}</p>
-                        </a>
-                    </div>
+        <div class="col-2 mb-4">
+            <div class="card sd border-dark cur-select hl h-100" onclick="movie_info(${list[k].id}, showing)">
+                <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_picture_available.png'">
+                
+                <div class="card-img-overlay d-flex flex-column justify-content-end">
+                    <a class="a-img text-center" href="#">
+                        <h4 class="card-title mb-0">${list[k].title}</h4>
+                        <p class="card-text text-light mb-1">${date}</p>
+                        <p class="card-text text-warning">${rated}</p>
+                    </a>
                 </div>
             </div>
+        </div>
+    `);
+    }
+
+    if (list.length > 20) {
+        $('#list').append(`
+            <div class="col-12">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        <li id="prev" class="page-item" data-toggle="tooltip" title="Page 1">
+                            <a class="page-link" href="#" onclick="cast_movie('${name}', ${person_id}, 1, showing)">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
         `);
-        ++k;
+
+        let begin = (page < 6) ? 1 : page - 4;
+        let end = (page < 6) ? 10 : page + 5;
+        let l = parseInt(list.length / 20) + 1;
+
+        for (i = begin; i <= l && i < end; ++i) {
+            $('[class="pagination justify-content-center"]').append(`
+                <li id="pg${i}" class="page-item">
+                    <a class="page-link" href="#" onclick="cast_movie('${name}', ${person_id}, ${i}, showing)">${i}</a>
+                </li>
+            `);
+        }
+
+        $('[class="pagination justify-content-center"]').append(`
+            <li id="next" class="page-item" data-toggle="tooltip" title="Page ${l}">
+                <a class="page-link" href="#" onclick="cast_movie('${name}', ${person_id}, ${l}, showing)">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        `);
+
+        $(`#pg${page}`).addClass('active');
+
+        if (page == 1)
+            $('#prev').addClass('disabled');
+        if (page == l)
+            $('#next').addClass('disabled');
     }
 
     cb();
