@@ -113,7 +113,7 @@ async function get_list(type, page, cb) {
                     <div class="card-img-overlay d-flex flex-column justify-content-end">
                         <a class="a-img text-center" href="#">
                             <h5 class="card-title mb-0">${item.title}</h5>
-                            <p class="card-text text-light mb-1">${date}</p>
+                            <p class="card-text text-white-50 mb-1">${date}</p>
                             <p class="card-text text-warning">${rated}</p>
                         </a>
                     </div>
@@ -255,7 +255,7 @@ async function search_movie(name, page, cb) {
                     <div class="card-img-overlay d-flex flex-column justify-content-end">
                         <a class="a-img text-center" href="#">
                             <h5 class="card-title mb-0">${item.title}</h5>
-                            <p class="card-text text-light mb-1">${date}</p>
+                            <p class="card-text text-white-50 mb-1">${date}</p>
                             <p class="card-text text-warning">${rated}</p>
                         </a>
                     </div>
@@ -331,7 +331,7 @@ async function movie_info(movie_id, cb) {
     const credits = item.credits;
     document.title = item.title;
 
-    let date = 'Unknown';
+    let date = '';
     if (item.release_date) {
         date = new Date(item.release_date).toLocaleString('en-GB', {
             year: 'numeric',
@@ -362,6 +362,8 @@ async function movie_info(movie_id, cb) {
     if (item.runtime)
         length = item.runtime + ' min';
 
+    let ov = (item.overview) ? item.overview : 'Unknown.';
+
     $('#list').append(`
         <div class="card sd border-dark bg-tran-1 mb-3 w-100">
             <div class="row">
@@ -371,24 +373,25 @@ async function movie_info(movie_id, cb) {
                 <div class="col-8">
                     <div class="card-body">
                         <h3 class="card-title text-success mb-0">${item.title}</h3>
-                        <p class="card-text text-secondary mb-1">${date}</p>
-                        <p class="card-text text-danger">${rated}</p>
-                        <p class="card-text"><strong>Length: </strong>${length}</p>
-                        <p class="card-text"><strong>Genres: </strong>${genres}</p>
-                        <p class="card-text mb-0"><strong>Overview: </strong></p>
-                        <p class="card-text">${item.overview}</p>
-                        <p class="card-text"><strong>Director: </strong></p>
+                        <p class="card-text text-white-50 mb-1">${date}</p>
+                        <p class="card-text text-warning">${rated}</p>
+                        <p class="card-text"><strong class="text-info">Length: </strong>${length}</p>
+                        <p class="card-text"><strong class="text-info">Genres: </strong>${genres}</p>
+                        <p class="card-text mb-0"><strong class="text-info">Overview: </strong></p>
+                        <p class="card-text">${ov}</p>
+                        <p class="card-text"><strong class="text-info">Director: </strong></p>
                         <div id="dir" class="row no-gutters"></div>
                     </div>
                 </div>
                 <div class="col-12">
-                    <h4 class="card-text mt-0 mb-0 pl-5 pt-2 text-light bg-tran-2">Cast:</h4>
+                    <h4 class="card-text mt-0 mb-0 pl-5 pt-2 pb-2 text-info bg-tran-2">Cast:</h4>
                     <div id="cc" class="carousel card-carousel slide" data-ride="carousel" data-interval="false">
                         
                     </div>
                 </div>
-                <div id="rw" class="col-12 mt-5">
-                    
+                <div class="col-12 mt-5">
+                    <h4 class="pl-5 pt-2 pb-2 text-info bg-tran-2">Review:</h4>
+                    <div id="rw"></div>
                 </div>
             </div>
         </div>
@@ -402,12 +405,12 @@ async function movie_info(movie_id, cb) {
             if (x.job == 'Director') {
                 $('#dir').append(`
                     <div class="col-2">
-                        <div class="card bg-dark cur-select hl h-100" onclick="cast_info(${x.id}, showing)">
+                        <div class="card sd bg-dark cur-select hl h-100" onclick="cast_info(${x.id}, showing)">
                             <img class="card-img" src="img/loading.gif" alt="Poster" onload="loaded(this, 'https://image.tmdb.org/t/p/w300_and_h450_bestv2${x.profile_path}')">
     
                             <div class="card-img-overlay d-flex flex-column justify-content-end">
                                 <a class="a-img text-center" href="#">
-                                    <h5 class="card-title text-warning">${x.name}</h5>
+                                    <h5 class="card-title">${x.name}</h5>
                                 </a>
                             </div>
                         </div>
@@ -458,8 +461,8 @@ async function movie_info(movie_id, cb) {
                 
                             <div class="card-img-overlay d-flex flex-column justify-content-end">
                                 <a class="a-img text-center" href="#">
-                                    <h5 class="card-title text-warning mb-0">${credits.cast[j].name}</h5>
-                                    <p class="card-text text-light mb-2">as ${char}</p>
+                                    <h5 class="card-title mb-0">${credits.cast[j].name}</h5>
+                                    <p class="card-text text-warning mb-2"><small class="text-white-50">as</small> ${char}</p>
                                 </a>
                             </div>
                         </div>
@@ -481,7 +484,6 @@ async function get_review(movie_id, page, cb) {
 
     hiding('rw');
     $('#rw').empty();
-    $('#rw').append('<h4 class="pl-5 pt-2 pb-2 text-light bg-tran-2">Review:</h4>');
 
     const key = 'c35160a326e0344de330c917e176e250';
     const response = await fetch(`
@@ -501,7 +503,7 @@ async function get_review(movie_id, page, cb) {
 
     if (!list.length) {
         $('#rw').append(`
-            <div class="p-3 ml-5 mr-5 mb-3 bg-tran-1">
+            <div class="p-3 ml-5 mr-5 mb-3 bg-tran-1 text-center">
                 <h5>No user reviews.</h5>
             </div>
         `);
@@ -509,10 +511,14 @@ async function get_review(movie_id, page, cb) {
         return;
     }
 
+    if (list.length > 2) {
+        $('#rw').addClass('scroll');
+    }
+
     for (const item of list) {
         $('#rw').append(`
-            <div class="p-3 ml-5 mr-5 mb-3 bg-tran-1">
-                <h5 class="text-primary">${item.author}</h5>
+            <div class="p-3 ml-5 mb-3 bg-tran-1 m-s">
+                <h5 class="text-danger">${item.author}</h5>
                 <p>${item.content}</p>
             </div>
         `);
@@ -610,7 +616,7 @@ async function search_cast(name, page, cb) {
         }
 
         if (films == '')
-            films = 'nothing.'
+            films = 'Nothing.'
         else
             films = films.substr(0, films.length - 2) + '.';
 
@@ -625,7 +631,7 @@ async function search_cast(name, page, cb) {
                             <a class="a-img" href="#">
                                 <h4 class="card-title">${item.name}</h4>
                             </a>
-                            <p class="card-text text-truncate"><strong>Known for: </strong>${films}</p>
+                            <p class="card-text text-truncate"><strong class="text-info">Known for: </strong>${films}</p>
                         </div>
                     </div>
                 </div>
@@ -727,7 +733,7 @@ async function cast_movie(name, person_id, page, cb) {
         `);
         }
 
-        let date = 'Unknown';
+        let date = '';
         if (list[k].release_date) {
             date = new Date(list[k].release_date).toLocaleString('en-GB', {
                 year: 'numeric',
@@ -752,7 +758,7 @@ async function cast_movie(name, person_id, page, cb) {
                 <div class="card-img-overlay d-flex flex-column justify-content-end">
                     <a class="a-img text-center" href="#">
                         <h4 class="card-title mb-0">${list[k].title}</h4>
-                        <p class="card-text text-light mb-1">${date}</p>
+                        <p class="card-text text-white-50 mb-1">${date}</p>
                         <p class="card-text text-warning">${rated}</p>
                     </a>
                 </div>
@@ -831,7 +837,7 @@ async function cast_info(person_id, cb) {
 
     document.title = item.name;
 
-    let date = 'Unknown';
+    let date = '';
     if (item.birthday) {
         date = new Date(item.birthday).toLocaleString('en-GB', {
             year: 'numeric',
@@ -839,6 +845,8 @@ async function cast_info(person_id, cb) {
             day: 'numeric'
         });
     }
+
+    let bio = (item.biography) ? item.biography : 'Unknown.';
 
     $('#list').append(`
         <div class="card sd border-dark bg-tran-1 mb-3 w-100">
@@ -849,20 +857,11 @@ async function cast_info(person_id, cb) {
                 <div class="col-8">
                     <div class="card-body">
                         <h3 class="card-title text-success mb-0">${item.name}</h3>
-                        <p class="card-text text-secondary ">${date}</p>
-                        <p class="card-text"><h5>Biography: </h5>${item.biography}</p>
-                        <p class="card-text"><h5>Known for: </h5></p>
-                        <div id="cc" class="carousel card-carousel slide mt-5" data-ride="carousel" data-interval="false">
-                            <div class="carousel-inner"></div>
-                            <a class="carousel-control-prev" href="#cc" role="button" data-slide="prev">
-                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                <span class="sr-only">Previous</span>
-                            </a>
-                            <a class="carousel-control-next" href="#cc" role="button" data-slide="next">
-                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                <span class="sr-only">Next</span>
-                            </a>
-                        </div>
+                        <p class="card-text text-white-50 ">${date}</p>
+                        <h5 class="card-text text-info">Biography: </h5>
+                        <p class="card-text">${bio}</p>
+                        <h5 class="card-text text-info">Known for: </h5>
+                        <div id="ml" class="scroll mt-3"></div>
                     </div>
                 </div>
             </div>
@@ -870,69 +869,60 @@ async function cast_info(person_id, cb) {
     `);
 
     if (!credits.length) {
-        $('#cc').empty();
-        $('#cc').append('<p class="card-text ml-5">Unknown</p>');
+        $('#ml').empty();
+        $('#ml').append('<p class="card-text ml-5">Nothing.</p>');
     } else {
-        var indicator = Math.ceil(credits.length / 2);
-        for (i = 0; i < indicator; ++i) {
-            $('[class="carousel-inner"]').append(`
-                <div id="cc${i}" class="carousel-item">
-                    <div class="row"></div>
-                </div>
-            `);
-            let n = Math.min(i * 2 + 2, credits.length);
-            for (j = i * 2; j < n; ++j) {
 
-                let date = 'Unknown';
-                if (credits[j].release_date) {
-                    date = new Date(credits[j].release_date).toLocaleString('en-GB', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                    });
-                }
+        for (const item of credits) {
 
-                var rated = '';
-                for (k = 0; k < parseInt(credits[j].vote_average / 2); ++k)
-                    rated += '&#9733';
-                for (k = parseInt(credits[j].vote_average / 2); k < 5; ++k)
-                    rated += '&#9734';
-                rated += '(' + credits[j].vote_count + ')';
+            let date = '';
+            if (item.release_date) {
+                date = new Date(item.release_date).toLocaleString('en-GB', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            }
 
-                let as = (credits[j].character) ? credits[j].character : credits[j].job;
-                if (!as)
-                    as = 'Unknown';
+            var rated = '';
+            for (k = 0; k < parseInt(item.vote_average / 2); ++k)
+                rated += '&#9733';
+            for (k = parseInt(item.vote_average / 2); k < 5; ++k)
+                rated += '&#9734';
+            rated += '(' + item.vote_count + ')';
 
-                $(`#cc${i}`).children().append(`
-                    <div class="card sd border-dark bg-tran-1 w-100 ml-5 mr-5">
-                        <div class="row justify-content-center">
-                            <div class="col-2 cur-select" onclick="movie_info(${credits[j].id}, showing)">
-                                <img class="card-img" src="img/loading.gif" alt="Poster" onload="loaded(this, 'https://image.tmdb.org/t/p/w185_and_h278_bestv2${credits[j].poster_path}')">
+            let as = (item.character) ? item.character : item.job;
+            if (!as)
+                as = 'Unknown';
+
+            let ov = (item.overview) ? item.overview : 'Unknown.';
+
+            $('#ml').append(`
+                <div class="card sd border-dark bg-tran-1 m-s">
+                    <div class="row">
+                        <div class="col-2 cur-select" onclick="movie_info(${item.id}, showing)">
+                            <img class="card-img" src="img/loading.gif" alt="Poster" onload="loaded(this, 'https://image.tmdb.org/t/p/w185_and_h278_bestv2${item.poster_path}')">
+                        </div>
+                        <div class="col-4">
+                            <div class="card-body">
+                                <a class="a-img" href="#" onclick="movie_info(${item.id}, showing)">
+                                    <h5 class="card-title mb-0">${item.title}</h5>
+                                </a>
+                                <p class="card-text text-white-50 mb-1">${date}</p>
+                                <p class="card-text text-warning">${rated}</p>
+                                <p class="card-text text-danger"><small class="text-white-50">as </small>${as}</p>
                             </div>
-                            <div class="col-4">
-                                <div class="card-body">
-                                    <a class="a-img" href="#" onclick="movie_info(${credits[j].id}, showing)">
-                                        <h5 class="card-title mb-0">${credits[j].title}</h5>
-                                    </a>
-                                    <p class="card-text text-secondary mb-1">${date}</p>
-                                    <p class="card-text text-danger">${rated}</p>
-                                    <p class="card-text"><strong>As: </strong>${as}</p>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="card-body">
-                                    <h5 class="card-text">Overview: </h5>
-                                    <p class="card-text text-truncate">${credits[j].overview}</p>
-                                </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card-body">
+                                <h5 class="card-text text-info">Overview: </h5>
+                                <p class="card-text text-truncate">${ov}</p>
                             </div>
                         </div>
                     </div>
-                `);
-            }
+                </div>
+            `);
         }
-
-        $('[data-slide-to="0"]').addClass('active');
-        $('#cc0').addClass('active');
     }
 
     cb('list');

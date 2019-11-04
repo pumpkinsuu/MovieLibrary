@@ -77,6 +77,17 @@ a.a-img:active {
     border-radius: 4px;
     box-sizing: border-box;
     outline: 0;
+    cursor: pointer;
+}
+
+.scroll {
+    height: 500px;
+    width: 100%;
+    overflow-y: auto;
+}
+
+.m-s {
+    margin-right: 14px;
 }
 
 .bg-gd {
@@ -210,30 +221,36 @@ a.a-img:active {
     border-radius: 50%;
     width: 20px;
     height: 1px;
+    opacity: 0.3;
 }
 
 .card-carousel .carousel-indicators .active {
     background: #f8f9fa;
+    opacity: 0.6;
 }
 
 .carousel-control-prev,
 .carousel-control-next {
     width: 8%;
-    opacity: 0.5;
+    opacity: 0.2;
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+    width: 8%;
+    opacity: 0.4;
+}
+
+.carousel-control-prev:focus,
+.carousel-control-next:focus {
+    width: 8%;
+    opacity: 0.6;
 }
 
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-    width: 100px;
-    height: 100px;
-}
-
-.carousel-control-prev-icon {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23fff' viewBox='0 0 8 8'%3e%3cpath d='M5.25 0l-4 4 4 4 1.5-1.5-2.5-2.5 2.5-2.5-1.5-1.5z'/%3e%3c/svg%3e");
-}
-
-.carousel-control-next-icon {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23fff' viewBox='0 0 8 8'%3e%3cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z'/%3e%3c/svg%3e");
+    width: 75px;
+    height: 75px;
 }
 
 .spinner {
