@@ -1,25 +1,26 @@
-function hiding() {
+function hiding(id) {
 
-    $('#list').hide();
+    $(id).hide();
     $('#loading').show();
 }
 
-function showing() {
+function showing(id) {
 
-    $('#list').show();
+    $(id).show();
     $('#loading').hide();
 }
 
 function loaded(img, src) {
 
-    if (img.src == src)
-        return;
-
     let dl = new Image();
     dl.onload = () => {
+
+        img.onload = null;
         img.src = dl.src;
     };
     dl.onerror = () => {
+
+        img.onload = null;
         img.src = 'img/No_picture_available.png';
     };
     dl.src = src;
@@ -51,7 +52,7 @@ async function get_list(type, page, cb) {
         document.title = 'Popular - MovieLibrary';
     }
 
-    hiding();
+    hiding('mid');
     $('#list').empty();
 
     const key = 'c35160a326e0344de330c917e176e250';
@@ -63,7 +64,7 @@ async function get_list(type, page, cb) {
         $('#cat').append(`
             <h3><i>${response.status}</i></h3>
         `);
-        cb();
+        cb('mid');
         return;
     }
 
@@ -74,7 +75,7 @@ async function get_list(type, page, cb) {
         $('#cat').append(`
             <h3><i>No movies.</i></h3>
         `);
-        cb();
+        cb('mid');
         return;
     }
 
@@ -164,7 +165,7 @@ async function get_list(type, page, cb) {
             $('#next').addClass('disabled');
     }
 
-    cb();
+    cb('mid');
 }
 
 function search_input() {
@@ -188,7 +189,7 @@ async function search_movie(name, page, cb) {
         <h2><i>Searching for: '${name}'</i></h2>
     `);
 
-    hiding();
+    hiding('list');
     $('#list').empty();
 
     const key = 'c35160a326e0344de330c917e176e250';
@@ -200,7 +201,7 @@ async function search_movie(name, page, cb) {
         $('#cat').append(`
             <h3><i>${response.status}</i></h3>
         `);
-        cb();
+        cb('list');
         return;
     }
 
@@ -211,7 +212,7 @@ async function search_movie(name, page, cb) {
         $('#cat').append(`
             <h3><i>There are no results that match your search.</i></h3>
         `);
-        cb();
+        cb('list');
         return;
     }
 
@@ -306,30 +307,28 @@ async function search_movie(name, page, cb) {
             $('#next').addClass('disabled');
     }
 
-    cb();
+    cb('list');
 }
 
 async function movie_info(movie_id, cb) {
 
     $('#cat').empty();
-    hiding();
+    hiding('list');
     $('#list').empty();
 
     const key = 'c35160a326e0344de330c917e176e250';
-    const response = await fetch(`https://api.themoviedb.org/3/movie/${movie_id}?api_key=${key}&language=en-US&append_to_response=credits,reviews`);
+    const response = await fetch(`https://api.themoviedb.org/3/movie/${movie_id}?api_key=${key}&language=en-US&append_to_response=credits`);
 
     if (response.status != 200) {
         $('#cat').append(`
             <h3><i>${response.status}</i></h3>
         `);
-        cb();
+        cb('list');
         return;
     }
 
     const item = await response.json();
     const credits = item.credits;
-    const reviews = item.reviews.results;
-
     document.title = item.title;
 
     let date = 'Unknown';
@@ -389,7 +388,7 @@ async function movie_info(movie_id, cb) {
                     </div>
                 </div>
                 <div id="rw" class="col-12 mt-5">
-                    <h4 class="pl-5 pt-2 pb-2 text-light bg-tran-2">Review:</h4>
+                    
                 </div>
             </div>
         </div>
@@ -403,7 +402,7 @@ async function movie_info(movie_id, cb) {
             if (x.job == 'Director') {
                 $('#dir').append(`
                     <div class="col-2">
-                        <div class="card bg-dark hl h-100">
+                        <div class="card bg-dark cur-select hl h-100" onclick="cast_info(${x.id}, showing)">
                             <img class="card-img" src="img/loading.gif" alt="Poster" onload="loaded(this, 'https://image.tmdb.org/t/p/w300_and_h450_bestv2${x.profile_path}')">
     
                             <div class="card-img-overlay d-flex flex-column justify-content-end">
@@ -473,24 +472,95 @@ async function movie_info(movie_id, cb) {
         $('#cc0').addClass('active');
     }
 
-    if (!reviews.length) {
+    get_review(movie_id, 1, showing);
+
+    cb('list');
+}
+
+async function get_review(movie_id, page, cb) {
+
+    hiding('rw');
+    $('#rw').empty();
+    $('#rw').append('<h4 class="pl-5 pt-2 pb-2 text-light bg-tran-2">Review:</h4>');
+
+    const key = 'c35160a326e0344de330c917e176e250';
+    const response = await fetch(`
+        https://api.themoviedb.org/3/movie/${movie_id}/reviews?api_key=${key}&language=en-US&page=${page}
+    `);
+
+    if (response.status != 200) {
+        $('#rw').append(`
+            <h3><i>${response.status}</i></h3>
+        `);
+        cb('rw');
+        return;
+    }
+
+    const data = await response.json();
+    const list = data.results;
+
+    if (!list.length) {
         $('#rw').append(`
             <div class="p-3 ml-5 mr-5 mb-3 bg-tran-1">
                 <h5>No user reviews.</h5>
             </div>
         `);
-    } else {
-        for (const x of reviews) {
-            $('#rw').append(`
-                <div class="p-3 ml-5 mr-5 mb-3 bg-tran-1">
-                    <h5>${x.author}</h5>
-                    <p>${x.content}</p>
-                </div>
-            `);
-        }
+        cb('rw');
+        return;
     }
 
-    cb();
+    for (const item of list) {
+        $('#rw').append(`
+            <div class="p-3 ml-5 mr-5 mb-3 bg-tran-1">
+                <h5 class="text-primary">${item.author}</h5>
+                <p>${item.content}</p>
+            </div>
+        `);
+    }
+
+    if (data.total_pages > 1) {
+        $('#list').append(`
+            <div class="col-12">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        <li id="prev" class="page-item" data-toggle="tooltip" title="Page 1">
+                            <a class="page-link" href="#" onclick="get_review(${movie_id}, 1, showing)">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        `);
+
+        let begin = (page < 6) ? 1 : page - 4;
+        let end = (page < 6) ? 10 : page + 5;
+
+        for (i = begin; i <= data.total_pages && i < end; ++i) {
+            $('[class="pagination justify-content-center"]').append(`
+                <li id="pg${i}" class="page-item">
+                    <a class="page-link" href="#" onclick="get_review(${movie_id}, ${i}, showing)">${i}</a>
+                </li>
+            `);
+        }
+
+        $('[class="pagination justify-content-center"]').append(`
+            <li id="next" class="page-item" data-toggle="tooltip" title="Page ${data.total_pages}">
+                <a class="page-link" href="#" onclick="get_review(${movie_id}, ${data.total_pages}, showing)">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        `);
+
+        $(`#pg${page}`).addClass('active');
+
+        if (page == 1)
+            $('#prev').addClass('disabled');
+        if (page == data.total_pages)
+            $('#next').addClass('disabled');
+    }
+
+    cb('rw');
 }
 
 async function search_cast(name, page, cb) {
@@ -500,7 +570,7 @@ async function search_cast(name, page, cb) {
         <h2><i>Searching for: '${name}'</i></h2>
     `);
 
-    hiding();
+    hiding('list');
     $('#list').empty();
 
     const key = 'c35160a326e0344de330c917e176e250';
@@ -512,18 +582,17 @@ async function search_cast(name, page, cb) {
         $('#cat').append(`
             <h3><i>${response.status}</i></h3>
         `);
-        cb();
+        cb('list');
         return;
     }
 
     const data = await response.json();
     const list = data.results;
-
     if (!list.length) {
         $('#cat').append(`
             <h3><i>There are no results that match your search.</i></h3>
         `);
-        cb();
+        cb('list');
         return;
     }
 
@@ -606,7 +675,7 @@ async function search_cast(name, page, cb) {
             $('#next').addClass('disabled');
     }
 
-    cb();
+    cb('list');
 }
 
 async function cast_movie(name, person_id, page, cb) {
@@ -616,7 +685,7 @@ async function cast_movie(name, person_id, page, cb) {
         <h2><i>'${name}' movies:</i></h2>
     `);
 
-    hiding();
+    hiding('list');
     $('#list').empty();
 
     const key = 'c35160a326e0344de330c917e176e250';
@@ -628,18 +697,18 @@ async function cast_movie(name, person_id, page, cb) {
         $('#cat').append(`
             <h3><i>${response.status}</i></h3>
         `);
-        cb();
+        cb('list');
         return;
     }
 
     const data = await response.json();
-    const list = data.cast;
+    const list = (data.cast.length) ? data.cast : data.crew;
 
     if (!list.length) {
         $('#cat').append(`
             <h3><i>There are no results that match your search.</i></h3>
         `);
-        cb();
+        cb('list');
         return;
     }
 
@@ -649,8 +718,6 @@ async function cast_movie(name, person_id, page, cb) {
     }
 
     let l = (page - 1) * 20;
-    console.log(l);
-    console.log(list.length);
 
     for (k = l; k < list.length && k < l + 20; ++k) {
 
@@ -737,13 +804,13 @@ async function cast_movie(name, person_id, page, cb) {
             $('#next').addClass('disabled');
     }
 
-    cb();
+    cb('list');
 }
 
 async function cast_info(person_id, cb) {
 
     $('#cat').empty();
-    hiding();
+    hiding('list');
     $('#list').empty();
 
     const key = 'c35160a326e0344de330c917e176e250';
@@ -755,12 +822,12 @@ async function cast_info(person_id, cb) {
         $('#cat').append(`
             <h3><i>${response.status}</i></h3>
         `);
-        cb();
+        cb('list');
         return;
     }
 
     const item = await response.json();
-    const credits = item.movie_credits.cast;
+    const credits = (item.movie_credits.cast.length) ? item.movie_credits.cast : item.movie_credits.crew;
 
     document.title = item.name;
 
@@ -868,5 +935,5 @@ async function cast_info(person_id, cb) {
         $('#cc0').addClass('active');
     }
 
-    cb();
+    cb('list');
 }
