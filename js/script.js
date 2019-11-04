@@ -10,6 +10,21 @@ function showing() {
     $('#loading').hide();
 }
 
+function loaded(img, src) {
+
+    if (img.src == src)
+        return;
+
+    let dl = new Image();
+    dl.onload = () => {
+        img.src = dl.src;
+    };
+    dl.onerror = () => {
+        img.src = 'img/No_picture_available.png';
+    };
+    dl.src = src;
+}
+
 async function get_list(type, page, cb) {
 
     $('#cat').empty();
@@ -89,13 +104,10 @@ async function get_list(type, page, cb) {
             rated += '&#9734';
         rated += '(' + item.vote_count + ')';
 
-        let img = new Image();
-        img.src = `https://image.tmdb.org/t/p/w300_and_h450_bestv2${item.poster_path}`;
-
         $(`#row${parseInt(k / 5)}`).append(`
             <div class="col-2 mb-4">
                 <div class="card sd border-dark cur-select hl h-100" onclick="movie_info(${item.id}, showing)">
-                    <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_picture_available.png'">
+                    <img class="card-img" src="img/loading.gif" alt="Poster" onload="loaded(this, 'https://image.tmdb.org/t/p/w300_and_h450_bestv2${item.poster_path}')">
                     
                     <div class="card-img-overlay d-flex flex-column justify-content-end">
                         <a class="a-img text-center" href="#">
@@ -234,13 +246,10 @@ async function search_movie(name, page, cb) {
             rated += '&#9734';
         rated += '(' + item.vote_count + ')';
 
-        let img = new Image();
-        img.src = `https://image.tmdb.org/t/p/w300_and_h450_bestv2${item.poster_path}`;
-
         $(`#row${parseInt(k / 5)}`).append(`
             <div class="col-2 mb-4">
                 <div class="card sd border-dark cur-select hl h-100" onclick="movie_info(${item.id}, showing)">
-                    <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_picture_available.png'">
+                    <img class="card-img" src="img/loading.gif" alt="Poster" onload="loaded(this, 'https://image.tmdb.org/t/p/w300_and_h450_bestv2${item.poster_path}')">
                     
                     <div class="card-img-overlay d-flex flex-column justify-content-end">
                         <a class="a-img text-center" href="#">
@@ -354,14 +363,11 @@ async function movie_info(movie_id, cb) {
     if (item.runtime)
         length = item.runtime + ' min';
 
-    let img = new Image();
-    img.src = `https://image.tmdb.org/t/p/w600_and_h900_bestv2${item.poster_path}`;
-
     $('#list').append(`
         <div class="card sd border-dark bg-tran-1 mb-3 w-100">
             <div class="row">
                 <div class="col-4">
-                    <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_picture_available.png'">
+                    <img class="card-img" src="img/loading.gif" alt="Poster" onload="loaded(this, 'https://image.tmdb.org/t/p/w600_and_h900_bestv2${item.poster_path}')">
                 </div>
                 <div class="col-8">
                     <div class="card-body">
@@ -394,14 +400,11 @@ async function movie_info(movie_id, cb) {
     else {
         for (const x of credits.crew) {
 
-            let img = new Image();
-            img.src = `https://image.tmdb.org/t/p/w300_and_h450_bestv2${x.profile_path}`;
-
             if (x.job == 'Director') {
                 $('#dir').append(`
                     <div class="col-2">
                         <div class="card bg-dark hl h-100">
-                            <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_profile_available.png'">
+                            <img class="card-img" src="img/loading.gif" alt="Poster" onload="loaded(this, 'https://image.tmdb.org/t/p/w300_and_h450_bestv2${x.profile_path}')">
     
                             <div class="card-img-overlay d-flex flex-column justify-content-end">
                                 <a class="a-img text-center" href="#">
@@ -449,13 +452,10 @@ async function movie_info(movie_id, cb) {
                 if (credits.cast[j].character != '')
                     char = credits.cast[j].character;
 
-                let img = new Image();
-                img.src = `https://image.tmdb.org/t/p/w300_and_h450_bestv2${credits.cast[j].profile_path}`;
-
                 $(`#cc${i}`).children().append(`
                     <div class="col-2">
                         <div class="card sd bg-dark cur-select hl h-100" onclick="cast_info(${credits.cast[j].id}, showing)">
-                            <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_profile_available.png'">
+                            <img class="card-img" src="img/loading.gif" alt="Poster" onload="loaded(this, 'https://image.tmdb.org/t/p/w300_and_h450_bestv2${credits.cast[j].profile_path}')">
                 
                             <div class="card-img-overlay d-flex flex-column justify-content-end">
                                 <a class="a-img text-center" href="#">
@@ -545,14 +545,11 @@ async function search_cast(name, page, cb) {
         else
             films = films.substr(0, films.length - 2) + '.';
 
-        let img = new Image();
-        img.src = `https://image.tmdb.org/t/p/w185_and_h278_bestv2${item.profile_path}`;
-
         $('#list').append(`
             <div class="card sd border-dark bg-tran-1 cur-select hl w-50" onclick="cast_movie('${item.name}', ${item.id}, 1, showing)">
                 <div class="row">
                     <div class="col-2">
-                        <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_profile_available.png'">
+                        <img class="card-img" src="img/loading.gif" alt="Poster" onload="loaded(this, 'https://image.tmdb.org/t/p/w185_and_h278_bestv2${item.profile_path}')">
                     </div>
                     <div class="col-10">
                         <div class="card-body">
@@ -680,13 +677,10 @@ async function cast_movie(name, person_id, page, cb) {
             rated += '&#9734';
         rated += '(' + list[k].vote_count + ')';
 
-        let img = new Image();
-        img.src = `https://image.tmdb.org/t/p/w300_and_h450_bestv2${list[k].poster_path}`;
-
         $(`#row${parseInt(k / 5)}`).append(`
         <div class="col-2 mb-4">
             <div class="card sd border-dark cur-select hl h-100" onclick="movie_info(${list[k].id}, showing)">
-                <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_picture_available.png'">
+                <img class="card-img" src="img/loading.gif" alt="Poster" onload="loaded(this, 'https://image.tmdb.org/t/p/w300_and_h450_bestv2${list[k].poster_path}')">
                 
                 <div class="card-img-overlay d-flex flex-column justify-content-end">
                     <a class="a-img text-center" href="#">
@@ -779,14 +773,11 @@ async function cast_info(person_id, cb) {
         });
     }
 
-    let img = new Image();
-    img.src = `https://image.tmdb.org/t/p/w600_and_h900_bestv2${item.profile_path}`;
-
     $('#list').append(`
         <div class="card sd border-dark bg-tran-1 mb-3 w-100">
             <div class="row no-gutters">
                 <div class="col-4">
-                    <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_profile_available.png'">
+                    <img class="card-img" src="img/loading.gif" alt="Poster" onload="loaded(this, 'https://image.tmdb.org/t/p/w600_and_h900_bestv2${item.profile_path}')">
                 </div>
                 <div class="col-8">
                     <div class="card-body">
@@ -845,14 +836,11 @@ async function cast_info(person_id, cb) {
                 if (!as)
                     as = 'Unknown';
 
-                let img = new Image();
-                img.src = `https://image.tmdb.org/t/p/w185_and_h278_bestv2${credits[j].poster_path}`;
-
                 $(`#cc${i}`).children().append(`
                     <div class="card sd border-dark bg-tran-1 w-100 ml-5 mr-5">
                         <div class="row justify-content-center">
                             <div class="col-2 cur-select" onclick="movie_info(${credits[j].id}, showing)">
-                                <img class="card-img" src=${img.src} alt="Poster" onerror="this.src='img/No_picture_available.png'">
+                                <img class="card-img" src="img/loading.gif" alt="Poster" onload="loaded(this, 'https://image.tmdb.org/t/p/w185_and_h278_bestv2${credits[j].poster_path}')">
                             </div>
                             <div class="col-4">
                                 <div class="card-body">
